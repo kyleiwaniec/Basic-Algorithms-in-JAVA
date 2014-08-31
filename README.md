@@ -8,7 +8,7 @@ Data structures and other Algorithms from COS210 can be found in the REGEX_UTIL 
 
 - QuickSorts - QuickSort implementations with timimg
 - RadixSort - RadixSort implementation with timimg
-- ParserMachine - run any valid JAVA source code as input to get formatted source code with syntax highlighting in HTML
+- ParserMachine - run any valid JAVA source code as input to get formatted source code with syntax highlighting in HTML. Some examples of the Parser's output can be seen here: http://candpgeneration.com/meteorite-catcher/source-code-as-HTML/
 - Polygon - algorithm which simplifies the outline of a 2D image by reducing the number of points
 
 - Calculator - Polish notation calculator. Takes infix expression, converts to postfix, and evaluates
