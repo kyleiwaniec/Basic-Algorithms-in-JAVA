@@ -19,7 +19,7 @@ Data structures and other Algorithms from COS210 can be found in the REGEX_UTIL 
 
 
 - PerfectSquare - determines if the input is a perfect square (limited to 64bit input)
-- PrimeFactors - lists the prime factor of the input
+- PrimeFactors - lists the prime factors of the input
 - PrimeSieve - determines the number of primes less than or equal to the input
 
 - BattleShip - a very primitive procedural Battleship game played with computer in the console.
