@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>public</span> <span class='keyword'>class</span> PerfectSquare<span class='separator'>{</span>
+<span class='lnNumb'>2:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> args<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>3:</span>		System.out.println<span class='separator'>(</span>isPerfectSquare<span class='separator'>(</span>Integer.parseInt<span class='separator'>(</span>args<span class='separator'>[</span><span class='number'>0</span><span class='separator'>]</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>4:</span>		<span class='lnComm'>// MAX int value: 2147483647 = 2^31-1<span class='number'></span></span>
+<span class='lnNumb'>5:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>6:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> isPerfectSquare<span class='separator'>(</span><span class='keyword'>long</span> input<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>7:</span>		<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>long</span> i = <span class='number'>1</span>; i &lt; input; i*=<span class='number'>2</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>8:</span>			<span class='keyword'>long</span> product = i*i;
+<span class='lnNumb'>9:</span>			<span class='keyword'>if</span> <span class='separator'>(</span>product == input<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>10:</span>				System.out.println<span class='separator'>(</span><span class='string'>"power of 2: "</span>+i<span class='separator'>)</span>;
+<span class='lnNumb'>11:</span>				<span class='keyword'>return</span> <span class='literal'>true</span>;
+<span class='lnNumb'>12:</span>			<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>product &gt; input<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>13:</span>				<span class='keyword'>long</span> lowerBound = i/<span class='number'>2</span>;
+<span class='lnNumb'>14:</span>				<span class='keyword'>long</span> upperBound = i;
+<span class='lnNumb'>15:</span>				<span class='keyword'>return</span> binarySearch<span class='separator'>(</span>lowerBound, upperBound, input<span class='separator'>)</span>;
+<span class='lnNumb'>16:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>17:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>18:</span>		<span class='keyword'>return</span> <span class='literal'>false</span>;
+<span class='lnNumb'>19:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>20:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> binarySearch<span class='separator'>(</span><span class='keyword'>long</span> low, <span class='keyword'>long</span> high, <span class='keyword'>long</span> input<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>21:</span>		<span class='keyword'>long</span> mid, product, ans = <span class='number'>0</span>;
+<span class='lnNumb'>22:</span>		
+<span class='lnNumb'>23:</span>		<span class='keyword'>while</span> <span class='separator'>(</span>low &lt;= high<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>24:</span>			mid = <span class='separator'>(</span>low + high<span class='separator'>)</span> / <span class='number'>2</span>;
+<span class='lnNumb'>25:</span>			System.out.println<span class='separator'>(</span><span class='string'>"low: "</span>+low+<span class='string'>", high:"</span> +high+<span class='string'>", middle: "</span>+mid<span class='separator'>)</span>;
+<span class='lnNumb'>26:</span>			product = mid*mid;
+<span class='lnNumb'>27:</span>			<span class='keyword'>if</span><span class='separator'>(</span>product == input<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>28:</span>				System.out.println<span class='separator'>(</span><span class='string'>"other square: "</span>+mid<span class='separator'>)</span>;
+<span class='lnNumb'>29:</span>				ans = <span class='number'>1</span>;
+<span class='lnNumb'>30:</span>				<span class='keyword'>break</span>;
+<span class='lnNumb'>31:</span>			<span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>product &gt; input<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>32:</span>				high = mid - <span class='number'>1</span>;
+<span class='lnNumb'>33:</span>			<span class='separator'>}</span> <span class='keyword'>else</span>  <span class='separator'>{</span>
+<span class='lnNumb'>34:</span>				low = mid + <span class='number'>1</span>;
+<span class='lnNumb'>35:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>36:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>37:</span>		<span class='keyword'>return</span> ans == <span class='number'>1</span> ? <span class='literal'>true</span> : <span class='literal'>false</span>;
+<span class='lnNumb'>38:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>39:</span><span class='separator'>}</span></pre> </body></html>

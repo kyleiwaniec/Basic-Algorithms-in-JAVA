@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.util.Scanner;
+<span class='lnNumb'>2:</span><span class='keyword'>public</span> <span class='keyword'>class</span> TestBinaryToDecimal <span class='separator'>{</span>
+<span class='lnNumb'>3:</span>       <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> args<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>4:</span>              Scanner input = <span class='keyword'>new</span> Scanner<span class='separator'>(</span>System.in<span class='separator'>)</span>;
+<span class='lnNumb'>5:</span>              
+<span class='lnNumb'>6:</span>              BinaryToDecimal d = <span class='keyword'>new</span> BinaryToDecimal<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>7:</span>              
+<span class='lnNumb'>8:</span>              <span class='keyword'>boolean</span> numIsBad = <span class='literal'>true</span>;
+<span class='lnNumb'>9:</span>              <span class='keyword'>while</span><span class='separator'>(</span>numIsBad == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>10:</span>            	  System.out.println<span class='separator'>(</span><span class='string'>"Enter a binary number:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>11:</span>            	  String numInput = input.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>12:</span>              <span class='keyword'>try</span><span class='separator'>{</span>
+<span class='lnNumb'>13:</span>            	  d.toDecimal<span class='separator'>(</span>numInput<span class='separator'>)</span>;
+<span class='lnNumb'>14:</span>            	  numIsBad = <span class='literal'>false</span>;
+<span class='lnNumb'>15:</span>              <span class='separator'>}</span><span class='keyword'>catch</span><span class='separator'>(</span>BinaryException be<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>16:</span>            	  System.out.println<span class='separator'>(</span><span class='string'>"An Exception has occurred!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>17:</span>            	  <span class='lnComm'>//System.out.println(be.getDescription());</span>
+<span class='lnNumb'>18:</span>            	  System.out.println<span class='separator'>(</span>be.toString<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>19:</span>            	  numIsBad = <span class='literal'>true</span>;
+<span class='lnNumb'>20:</span>            	  <span class='keyword'>continue</span>;
+<span class='lnNumb'>21:</span>            	  <span class='separator'>}</span>
+<span class='lnNumb'>22:</span>              
+<span class='lnNumb'>23:</span>              
+<span class='lnNumb'>24:</span>              <span class='separator'>}</span>
+<span class='lnNumb'>25:</span>              
+<span class='lnNumb'>26:</span>              System.out.println<span class='separator'>(</span>d.toDecimaltoString<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>27:</span>       <span class='separator'>}</span>
+<span class='lnNumb'>28:</span><span class='separator'>}</span></pre> </body></html>

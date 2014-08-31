@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.util.ArrayList;
+<span class='lnNumb'>2:</span><span class='keyword'>import</span> java.util.List;
+<span class='lnNumb'>3:</span><span class='keyword'>import</span> java.util.Arrays;
+<span class='lnNumb'>4:</span><span class='keyword'>import</span> java.util.Random;
+<span class='lnNumb'>5:</span><span class='keyword'>import</span> java.io.*;
+<span class='lnNumb'>6:</span><span class='keyword'>public</span> <span class='keyword'>class</span> RadixSort
+<span class='lnNumb'>7:</span><span class='separator'>{</span>
+<span class='lnNumb'>8:</span>    <span class='blComm'>/*
+<span class='lnNumb'>9:</span>     * Radix sort an array of Strings
+<span class='lnNumb'>10:</span>     * Assume all are all ASCII
+<span class='lnNumb'>11:</span>     * Assume all have same length
+<span class='lnNumb'>12:</span>     */</span>
+<span class='lnNumb'>13:</span>    <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> radixSortA<span class='separator'>(</span> String <span class='separator'>[</span> <span class='separator'>]</span> arr, <span class='keyword'>int</span> stringLen <span class='separator'>)</span>
+<span class='lnNumb'>14:</span>    <span class='separator'>{</span>
+<span class='lnNumb'>15:</span>        <span class='keyword'>final</span> <span class='keyword'>int</span> BUCKETS = <span class='number'>256</span>;
+<span class='lnNumb'>16:</span>        
+<span class='lnNumb'>17:</span>        ArrayList&lt;String&gt; <span class='separator'>[</span> <span class='separator'>]</span> buckets = <span class='keyword'>new</span> ArrayList<span class='separator'>[</span> BUCKETS <span class='separator'>]</span>;
+<span class='lnNumb'>18:</span>        
+<span class='lnNumb'>19:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; BUCKETS; i++ <span class='separator'>)</span>
+<span class='lnNumb'>20:</span>            buckets<span class='separator'>[</span> i <span class='separator'>]</span> = <span class='keyword'>new</span> ArrayList<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>21:</span>        
+<span class='lnNumb'>22:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> pos = stringLen - <span class='number'>1</span>; pos &gt;= <span class='number'>0</span>; pos-- <span class='separator'>)</span>
+<span class='lnNumb'>23:</span>        <span class='separator'>{</span>
+<span class='lnNumb'>24:</span>            <span class='keyword'>for</span><span class='separator'>(</span> String s : arr <span class='separator'>)</span>
+<span class='lnNumb'>25:</span>                buckets<span class='separator'>[</span> s.charAt<span class='separator'>(</span> pos <span class='separator'>)</span> <span class='separator'>]</span>.add<span class='separator'>(</span> s <span class='separator'>)</span>;
+<span class='lnNumb'>26:</span>            
+<span class='lnNumb'>27:</span>            <span class='keyword'>int</span> idx = <span class='number'>0</span>;
+<span class='lnNumb'>28:</span>            <span class='keyword'>for</span><span class='separator'>(</span> ArrayList&lt;String&gt; thisBucket : buckets <span class='separator'>)</span>
+<span class='lnNumb'>29:</span>            <span class='separator'>{</span>
+<span class='lnNumb'>30:</span>                <span class='keyword'>for</span><span class='separator'>(</span> String s : thisBucket <span class='separator'>)</span>
+<span class='lnNumb'>31:</span>                    arr<span class='separator'>[</span> idx++ <span class='separator'>]</span> = s;
+<span class='lnNumb'>32:</span>                
+<span class='lnNumb'>33:</span>                thisBucket.clear<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>34:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>35:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>36:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>37:</span>       
+<span class='lnNumb'>38:</span>    <span class='blComm'>/*
+<span class='lnNumb'>39:</span>     * Counting radix sort an array of Strings
+<span class='lnNumb'>40:</span>     * Assume all are all ASCII
+<span class='lnNumb'>41:</span>     * Assume all have same length
+<span class='lnNumb'>42:</span>     */</span>
+<span class='lnNumb'>43:</span>    <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> countingRadixSort<span class='separator'>(</span> String <span class='separator'>[</span> <span class='separator'>]</span> arr, <span class='keyword'>int</span> stringLen <span class='separator'>)</span>
+<span class='lnNumb'>44:</span>    <span class='separator'>{</span>
+<span class='lnNumb'>45:</span>        <span class='keyword'>final</span> <span class='keyword'>int</span> BUCKETS = <span class='number'>256</span>;
+<span class='lnNumb'>46:</span>        
+<span class='lnNumb'>47:</span>        <span class='keyword'>int</span> N = arr.length;
+<span class='lnNumb'>48:</span>        String <span class='separator'>[</span> <span class='separator'>]</span> buffer = <span class='keyword'>new</span> String<span class='separator'>[</span> N <span class='separator'>]</span>;
+<span class='lnNumb'>49:</span>        String <span class='separator'>[</span> <span class='separator'>]</span> in = arr;
+<span class='lnNumb'>50:</span>        String <span class='separator'>[</span> <span class='separator'>]</span> out = buffer;
+<span class='lnNumb'>51:</span>        
+<span class='lnNumb'>52:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> pos = stringLen - <span class='number'>1</span>; pos &gt;= <span class='number'>0</span>; pos-- <span class='separator'>)</span>
+<span class='lnNumb'>53:</span>        <span class='separator'>{</span>
+<span class='lnNumb'>54:</span>            <span class='keyword'>int</span><span class='separator'>[</span> <span class='separator'>]</span> count = <span class='keyword'>new</span> <span class='keyword'>int</span> <span class='separator'>[</span> BUCKETS + <span class='number'>1</span> <span class='separator'>]</span>;
+<span class='lnNumb'>55:</span>            
+<span class='lnNumb'>56:</span>            <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; N; i++ <span class='separator'>)</span>
+<span class='lnNumb'>57:</span>                count<span class='separator'>[</span> in<span class='separator'>[</span> i <span class='separator'>]</span>.charAt<span class='separator'>(</span> pos <span class='separator'>)</span> + <span class='number'>1</span> <span class='separator'>]</span>++;
+<span class='lnNumb'>58:</span>            <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> b = <span class='number'>1</span>; b &lt;= BUCKETS; b++ <span class='separator'>)</span>
+<span class='lnNumb'>59:</span>                count<span class='separator'>[</span> b <span class='separator'>]</span> += count<span class='separator'>[</span> b - <span class='number'>1</span> <span class='separator'>]</span>;
+<span class='lnNumb'>60:</span>            <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; N; i++ <span class='separator'>)</span>
+<span class='lnNumb'>61:</span>                out<span class='separator'>[</span> count<span class='separator'>[</span> in<span class='separator'>[</span> i <span class='separator'>]</span>.charAt<span class='separator'>(</span> pos <span class='separator'>)</span> <span class='separator'>]</span>++ <span class='separator'>]</span> = in<span class='separator'>[</span> i <span class='separator'>]</span>;
+<span class='lnNumb'>62:</span>            
+<span class='lnNumb'>63:</span>              <span class='lnComm'>// swap in and out roles</span>
+<span class='lnNumb'>64:</span>            String <span class='separator'>[</span> <span class='separator'>]</span> tmp = in;
+<span class='lnNumb'>65:</span>            in = out;
+<span class='lnNumb'>66:</span>            out = tmp;
+<span class='lnNumb'>67:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>68:</span>        
+<span class='lnNumb'>69:</span>           <span class='lnComm'>// if odd number of passes, in is buffer, out is arr; so copy back</span>
+<span class='lnNumb'>70:</span>        <span class='keyword'>if</span><span class='separator'>(</span> stringLen % <span class='number'>2</span> == <span class='number'>1</span> <span class='separator'>)</span>
+<span class='lnNumb'>71:</span>            <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; arr.length; i++ <span class='separator'>)</span>
+<span class='lnNumb'>72:</span>                out<span class='separator'>[</span> i <span class='separator'>]</span> = in<span class='separator'>[</span> i <span class='separator'>]</span>;
+<span class='lnNumb'>73:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>74:</span>    
+<span class='lnNumb'>75:</span>    <span class='blComm'>/*
+<span class='lnNumb'>76:</span>     * Radix sort an array of Strings
+<span class='lnNumb'>77:</span>     * Assume all are all ASCII
+<span class='lnNumb'>78:</span>     * Assume all have length bounded by maxLen
+<span class='lnNumb'>79:</span>     */</span>
+<span class='lnNumb'>80:</span>    <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> radixSort<span class='separator'>(</span> String <span class='separator'>[</span> <span class='separator'>]</span> arr, <span class='keyword'>int</span> maxLen <span class='separator'>)</span>
+<span class='lnNumb'>81:</span>    <span class='separator'>{</span>
+<span class='lnNumb'>82:</span>        <span class='keyword'>final</span> <span class='keyword'>int</span> BUCKETS = <span class='number'>256</span>;
+<span class='lnNumb'>83:</span>        
+<span class='lnNumb'>84:</span>        ArrayList&lt;String&gt; <span class='separator'>[</span> <span class='separator'>]</span> wordsByLength = <span class='keyword'>new</span> ArrayList<span class='separator'>[</span> maxLen + <span class='number'>1</span> <span class='separator'>]</span>;  <span class='lnComm'>// 5 </span>
+<span class='lnNumb'>85:</span>        ArrayList&lt;String&gt; <span class='separator'>[</span> <span class='separator'>]</span> buckets = <span class='keyword'>new</span> ArrayList<span class='separator'>[</span> BUCKETS <span class='separator'>]</span>; <span class='lnComm'>// 256</span>
+<span class='lnNumb'>86:</span>        
+<span class='lnNumb'>87:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; wordsByLength.length; i++ <span class='separator'>)</span>
+<span class='lnNumb'>88:</span>            wordsByLength<span class='separator'>[</span> i <span class='separator'>]</span> = <span class='keyword'>new</span> ArrayList<span class='separator'>(</span> <span class='separator'>)</span>; <span class='lnComm'>// a new arralist for each letter in the word</span>
+<span class='lnNumb'>89:</span>        
+<span class='lnNumb'>90:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; BUCKETS; i++ <span class='separator'>)</span>
+<span class='lnNumb'>91:</span>            buckets<span class='separator'>[</span> i <span class='separator'>]</span> = <span class='keyword'>new</span> ArrayList<span class='separator'>(</span> <span class='separator'>)</span>; <span class='lnComm'>// a new arralist for each buccket in bucket array</span>
+<span class='lnNumb'>92:</span>        
+<span class='lnNumb'>93:</span>        <span class='keyword'>for</span><span class='separator'>(</span> String s : arr <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>94:</span>        <span class='lnComm'>// for every string in the inout array</span>
+<span class='lnNumb'>95:</span>            wordsByLength<span class='separator'>[</span> s.length<span class='separator'>(</span> <span class='separator'>)</span> <span class='separator'>]</span>.add<span class='separator'>(</span> s <span class='separator'>)</span>; <span class='lnComm'>//add the string to arraylist in position of size of string</span>
+<span class='lnNumb'>96:</span>            <span class='lnComm'>//System.out.println("s.length( ):  "+s.length( ));</span>
+<span class='lnNumb'>97:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>98:</span>        <span class='keyword'>int</span> idx = <span class='number'>0</span>;
+<span class='lnNumb'>99:</span>        <span class='keyword'>for</span><span class='separator'>(</span> ArrayList&lt;String&gt; wordList : wordsByLength <span class='separator'>)</span>
+<span class='lnNumb'>100:</span>            <span class='keyword'>for</span><span class='separator'>(</span> String s : wordList <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>101:</span>                <span class='lnComm'>//System.out.println("s:  "+s);</span>
+<span class='lnNumb'>102:</span>                 arr<span class='separator'>[</span> idx++ <span class='separator'>]</span> = s;
+<span class='lnNumb'>103:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>104:</span>               
+<span class='lnNumb'>105:</span>        
+<span class='lnNumb'>106:</span>        <span class='keyword'>int</span> startingIndex = arr.length;  
+<span class='lnNumb'>107:</span>        <span class='lnComm'>//System.out.println("arr.length:  "+arr.length);  </span>
+<span class='lnNumb'>108:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> pos = maxLen - <span class='number'>1</span>; pos &gt;= <span class='number'>0</span>; pos-- <span class='separator'>)</span>
+<span class='lnNumb'>109:</span>        <span class='separator'>{</span>
+<span class='lnNumb'>110:</span>            startingIndex -= wordsByLength<span class='separator'>[</span> pos + <span class='number'>1</span> <span class='separator'>]</span>.size<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>111:</span>            <span class='lnComm'>//System.out.println("startingIndex:  "+startingIndex); </span>
+<span class='lnNumb'>112:</span>            <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = startingIndex; i &lt; arr.length; i++ <span class='separator'>)</span> <span class='separator'>{</span><span class='lnComm'>// input array length.</span>
+<span class='lnNumb'>113:</span>                buckets<span class='separator'>[</span> arr<span class='separator'>[</span> i <span class='separator'>]</span>.charAt<span class='separator'>(</span> pos <span class='separator'>)</span> <span class='separator'>]</span>.add<span class='separator'>(</span> arr<span class='separator'>[</span> i <span class='separator'>]</span> <span class='separator'>)</span>;
+<span class='lnNumb'>114:</span>                <span class='lnComm'>//System.out.println("arr[ i ]:  "+arr[ i ]); </span>
+<span class='lnNumb'>115:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>116:</span>            idx = startingIndex;
+<span class='lnNumb'>117:</span>            <span class='keyword'>for</span><span class='separator'>(</span> ArrayList&lt;String&gt; thisBucket : buckets <span class='separator'>)</span>
+<span class='lnNumb'>118:</span>            <span class='separator'>{</span>
+<span class='lnNumb'>119:</span>                <span class='keyword'>for</span><span class='separator'>(</span> String s : thisBucket <span class='separator'>)</span>
+<span class='lnNumb'>120:</span>                    arr<span class='separator'>[</span> idx++ <span class='separator'>]</span> = s;
+<span class='lnNumb'>121:</span>                
+<span class='lnNumb'>122:</span>                thisBucket.clear<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>123:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>124:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>125:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>126:</span>    <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span> String <span class='separator'>[</span> <span class='separator'>]</span> args <span class='separator'>)</span><span class='keyword'>throws</span> IOException
+<span class='lnNumb'>127:</span>    <span class='separator'>{</span>
+<span class='lnNumb'>128:</span>        
+<span class='lnNumb'>129:</span>        File file = <span class='keyword'>new</span> File<span class='separator'>(</span><span class='string'>"crimeandpunishment/all.txt"</span><span class='separator'>)</span>;
+<span class='lnNumb'>130:</span>        BufferedReader br = <span class='keyword'>new</span> BufferedReader<span class='separator'>(</span><span class='keyword'>new</span> InputStreamReader<span class='separator'>(</span><span class='keyword'>new</span> FileInputStream<span class='separator'>(</span>file<span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>131:</span>        String line = <span class='literal'>null</span>;
+<span class='lnNumb'>132:</span>        String<span class='separator'>[</span><span class='separator'>]</span> words = <span class='keyword'>new</span> String<span class='separator'>[</span><span class='number'>220000</span><span class='separator'>]</span>;
+<span class='lnNumb'>133:</span>        <span class='keyword'>int</span> j = <span class='number'>0</span>;
+<span class='lnNumb'>134:</span>        <span class='lnComm'>// // a little hackery shmuckery to fill the array</span>
+<span class='lnNumb'>135:</span>        <span class='lnComm'>// for(int i = j; i &lt; 220000; i++){<span class='separator'></span></span>
+<span class='lnNumb'>136:</span>        <span class='lnComm'>//   words[i] = "null";</span>
+<span class='lnNumb'>137:</span>        <span class='lnComm'>// }   </span>
+<span class='lnNumb'>138:</span>        List&lt;String&gt; lst = <span class='keyword'>new</span> ArrayList<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>139:</span>        <span class='keyword'>while</span><span class='separator'>(</span> <span class='separator'>(</span>line = br.readLine<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>!= <span class='literal'>null</span> <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>140:</span>                <span class='lnComm'>// \\s+ means any number of whitespaces between tokens</span>
+<span class='lnNumb'>141:</span>            String <span class='separator'>[</span><span class='separator'>]</span> tokens = line.split<span class='separator'>(</span><span class='string'>"\\s+"</span><span class='separator'>)</span>;
+<span class='lnNumb'>142:</span>            <span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; tokens.length; i++, j++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>143:</span>              words<span class='separator'>[</span>j<span class='separator'>]</span> = tokens<span class='separator'>[</span>i<span class='separator'>]</span>;
+<span class='lnNumb'>144:</span>                lst.add<span class='separator'>(</span> tokens<span class='separator'>[</span>i<span class='separator'>]</span> <span class='separator'>)</span>;
+<span class='lnNumb'>145:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>146:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>147:</span>        
+<span class='lnNumb'>148:</span>        Random r = <span class='keyword'>new</span> Random<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>149:</span>        <span class='keyword'>final</span> <span class='keyword'>int</span> LEN = <span class='number'>5</span>;
+<span class='lnNumb'>150:</span>        
+<span class='lnNumb'>151:</span>        <span class='lnComm'>// for( int i = 0; i &lt; 1000000; i++ )<span class='separator'></span></span>
+<span class='lnNumb'>152:</span>        <span class='lnComm'>// {<span class='separator'></span></span>
+<span class='lnNumb'>153:</span>        <span class='lnComm'>//     String str = "";</span>
+<span class='lnNumb'>154:</span>        <span class='lnComm'>//     int len = LEN; // 3 + r.nextInt( 7 ); // between 3 and 9 characters</span>
+<span class='lnNumb'>155:</span>        <span class='lnComm'>//     for( int j = 0; j &lt; len; j++ )<span class='separator'></span></span>
+<span class='lnNumb'>156:</span>        <span class='lnComm'>//         str += (char) ( 'a' + r.nextInt( 26 ) );</span>
+<span class='lnNumb'>157:</span>        <span class='lnComm'>//     lst.add( str );</span>
+<span class='lnNumb'>158:</span>        <span class='lnComm'>// }<span class='separator'></span></span>
+<span class='lnNumb'>159:</span>        String <span class='separator'>[</span> <span class='separator'>]</span> arr1 = <span class='keyword'>new</span> String<span class='separator'>[</span> lst.size<span class='separator'>(</span> <span class='separator'>)</span> <span class='separator'>]</span>;
+<span class='lnNumb'>160:</span>        String <span class='separator'>[</span> <span class='separator'>]</span> arr2 = <span class='keyword'>new</span> String<span class='separator'>[</span> lst.size<span class='separator'>(</span> <span class='separator'>)</span> <span class='separator'>]</span>;
+<span class='lnNumb'>161:</span>        lst.toArray<span class='separator'>(</span> arr1 <span class='separator'>)</span>;
+<span class='lnNumb'>162:</span>        lst.toArray<span class='separator'>(</span> arr2 <span class='separator'>)</span>;
+<span class='lnNumb'>163:</span>        <span class='keyword'>long</span> start, end;
+<span class='lnNumb'>164:</span>        start = System.currentTimeMillis<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>165:</span>        countingRadixSort<span class='separator'>(</span> arr1, LEN <span class='separator'>)</span>;
+<span class='lnNumb'>166:</span>        end = System.currentTimeMillis<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>167:</span>        System.out.println<span class='separator'>(</span> <span class='string'>"Elapsed: "</span> + <span class='separator'>(</span> end - start <span class='separator'>)</span> <span class='separator'>)</span>;
+<span class='lnNumb'>168:</span>        start = System.currentTimeMillis<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>169:</span>        radixSort<span class='separator'>(</span> arr2, LEN <span class='separator'>)</span>;
+<span class='lnNumb'>170:</span>        end = System.currentTimeMillis<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>171:</span>        System.out.println<span class='separator'>(</span> <span class='string'>"Elapsed: "</span> + <span class='separator'>(</span> end - start <span class='separator'>)</span> <span class='separator'>)</span>;
+<span class='lnNumb'>172:</span>        start = System.currentTimeMillis<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>173:</span>        Arrays.sort<span class='separator'>(</span> arr1<span class='separator'>)</span>;
+<span class='lnNumb'>174:</span>        end = System.currentTimeMillis<span class='separator'>(</span> <span class='separator'>)</span>;
+<span class='lnNumb'>175:</span>        System.out.println<span class='separator'>(</span> <span class='string'>"Elapsed: "</span> + <span class='separator'>(</span> end - start <span class='separator'>)</span> <span class='separator'>)</span>;
+<span class='lnNumb'>176:</span>        <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; arr1.length; i++ <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>177:</span>            <span class='lnComm'>//System.out.println("sorted array: "+arr1[i]);</span>
+<span class='lnNumb'>178:</span>            <span class='keyword'>if</span><span class='separator'>(</span> !arr1<span class='separator'>[</span> i <span class='separator'>]</span>.equals<span class='separator'>(</span> arr2<span class='separator'>[</span> i <span class='separator'>]</span>  <span class='separator'>)</span> <span class='separator'>)</span>
+<span class='lnNumb'>179:</span>                System.out.println<span class='separator'>(</span> <span class='string'>"OOPS!!"</span> <span class='separator'>)</span>;
+<span class='lnNumb'>180:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>181:</span>            
+<span class='lnNumb'>182:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>183:</span>    
+<span class='lnNumb'>184:</span><span class='separator'>}</span></pre> </body></html>

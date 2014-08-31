@@ -1,0 +1,800 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.util.Random;
+<span class='lnNumb'>2:</span><span class='keyword'>import</span> java.util.Scanner;
+<span class='lnNumb'>3:</span><span class='keyword'>public</span> <span class='keyword'>class</span> BattleShip <span class='separator'>{</span>
+<span class='lnNumb'>4:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> args<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>5:</span>		
+<span class='lnNumb'>6:</span>		<span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> ships = <span class='separator'>{</span> <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>,
+<span class='lnNumb'>7:</span>				<span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span> <span class='separator'>}</span>;
+<span class='lnNumb'>8:</span>		<span class='lnComm'>// this may be kind of a redundant way of doing things, but for now... so be it:</span>
+<span class='lnNumb'>9:</span>		<span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> ships_sunk = <span class='separator'>{</span> <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>,
+<span class='lnNumb'>10:</span>				<span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span> <span class='separator'>}</span>;
+<span class='lnNumb'>11:</span>		
+<span class='lnNumb'>12:</span>		<span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> compShips = <span class='separator'>{</span> <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>,
+<span class='lnNumb'>13:</span>				<span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span>, <span class='separator'>{</span> -<span class='number'>1</span>, -<span class='number'>1</span> <span class='separator'>}</span> <span class='separator'>}</span>;
+<span class='lnNumb'>14:</span>		<span class='blComm'>/*
+<span class='lnNumb'>15:</span>		 * Aircraft carrier = 5 battleship = 4 destroyer = 3 submarine = 3
+<span class='lnNumb'>16:</span>		 * patrol boat = 2
+<span class='lnNumb'>17:</span>		 */</span>
+<span class='lnNumb'>18:</span>		String<span class='separator'>[</span><span class='separator'>]</span> shipNames = <span class='separator'>{</span> <span class='string'>"Aircraft Carrier"</span>, <span class='string'>"Battleship"</span>, <span class='string'>"Destroyer"</span>,
+<span class='lnNumb'>19:</span>				<span class='string'>"Submarine"</span>, <span class='string'>"Patrol Boat"</span> <span class='separator'>}</span>;
+<span class='lnNumb'>20:</span>		String<span class='separator'>[</span><span class='separator'>]</span> directions = <span class='separator'>{</span> <span class='string'>"left"</span>, <span class='string'>"right"</span>, <span class='string'>"up"</span>, <span class='string'>"down"</span> <span class='separator'>}</span>;
+<span class='lnNumb'>21:</span>		<span class='lnComm'>// make a grid 10 by 10 (2 dimensional array)<span class='separator'></span></span>
+<span class='lnNumb'>22:</span>		Scanner input = <span class='keyword'>new</span> Scanner<span class='separator'>(</span>System.in<span class='separator'>)</span>;
+<span class='lnNumb'>23:</span>		<span class='keyword'>char</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> playerBoard = <span class='keyword'>new</span> <span class='keyword'>char</span><span class='separator'>[</span><span class='number'>10</span><span class='separator'>]</span><span class='separator'>[</span><span class='number'>10</span><span class='separator'>]</span>;
+<span class='lnNumb'>24:</span>		<span class='keyword'>char</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> compBoard = <span class='keyword'>new</span> <span class='keyword'>char</span><span class='separator'>[</span><span class='number'>10</span><span class='separator'>]</span><span class='separator'>[</span><span class='number'>10</span><span class='separator'>]</span>;
+<span class='lnNumb'>25:</span>		<span class='keyword'>char</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> compBoardView = <span class='keyword'>new</span> <span class='keyword'>char</span><span class='separator'>[</span><span class='number'>10</span><span class='separator'>]</span><span class='separator'>[</span><span class='number'>10</span><span class='separator'>]</span>;
+<span class='lnNumb'>26:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; <span class='number'>10</span>; i++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>27:</span>			<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; <span class='number'>10</span>; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>28:</span>				playerBoard<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>' '</span>;
+<span class='lnNumb'>29:</span>				compBoard<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>' '</span>;
+<span class='lnNumb'>30:</span>				compBoardView<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>' '</span>;
+<span class='lnNumb'>31:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>32:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>33:</span>		
+<span class='lnNumb'>34:</span>		<span class='lnComm'>// computer's board: - is a miss, * is a hit,</span>
+<span class='lnNumb'>35:</span>		<span class='lnComm'>// player's board: - is a miss, * is a hit, o is an un-hit ship</span>
+<span class='lnNumb'>36:</span>		
+<span class='lnNumb'>37:</span>		<span class='lnComm'>// place computer ships: (One day when I'm smarter, I'll use some kind of probability theory or something... but for now...)<span class='separator'></span></span>
+<span class='lnNumb'>38:</span>				<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; shipNames.length;<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>39:</span>					
+<span class='lnNumb'>40:</span>					Random row = <span class='keyword'>new</span> Random<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>41:</span>					<span class='keyword'>int</span> rowInt = row.nextInt<span class='separator'>(</span><span class='number'>9</span><span class='separator'>)</span>;
+<span class='lnNumb'>42:</span>					<span class='keyword'>int</span> colInt = row.nextInt<span class='separator'>(</span><span class='number'>9</span><span class='separator'>)</span>;
+<span class='lnNumb'>43:</span>					<span class='keyword'>int</span> dir = row.nextInt<span class='separator'>(</span><span class='number'>3</span><span class='separator'>)</span>;
+<span class='lnNumb'>44:</span>					
+<span class='lnNumb'>45:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> != <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>46:</span>							<span class='keyword'>continue</span>;
+<span class='lnNumb'>47:</span>						<span class='separator'>}</span> 
+<span class='lnNumb'>48:</span>					
+<span class='lnNumb'>49:</span>					
+<span class='lnNumb'>50:</span>					<span class='lnComm'>// right</span>
+<span class='lnNumb'>51:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>dir == <span class='number'>0</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>52:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>colInt + compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length &lt;= <span class='number'>10</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>53:</span>							<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>54:</span>							<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>55:</span>								<span class='keyword'>if</span> <span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt + k<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>56:</span>									count++;
+<span class='lnNumb'>57:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>58:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>59:</span>							<span class='keyword'>if</span> <span class='separator'>(</span>count == compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>60:</span>								<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>61:</span>								<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = colInt; j &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length + colInt; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>62:</span>									compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>63:</span>									
+<span class='lnNumb'>64:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>65:</span>								<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>66:</span>								<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>67:</span>									compShips<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + colInt + s;
+<span class='lnNumb'>68:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>69:</span>							<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>70:</span>								<span class='keyword'>continue</span>;
+<span class='lnNumb'>71:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>72:</span>						<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>73:</span>							<span class='keyword'>continue</span>;
+<span class='lnNumb'>74:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>75:</span>					<span class='separator'>}</span><span class='lnComm'>// end of direction right</span>
+<span class='lnNumb'>76:</span>					
+<span class='lnNumb'>77:</span>					<span class='lnComm'>// left</span>
+<span class='lnNumb'>78:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>dir == <span class='number'>1</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>79:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>colInt - compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length &gt;= -<span class='number'>1</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>80:</span>							<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>81:</span>							<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>82:</span>								<span class='keyword'>if</span> <span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt - k<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>83:</span>									count++;
+<span class='lnNumb'>84:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>85:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>86:</span>							<span class='keyword'>if</span> <span class='separator'>(</span>count == compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>87:</span>								<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>88:</span>								<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = colInt; j &gt; colInt - compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; j--<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>89:</span>									compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>90:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>91:</span>								<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>92:</span>								<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>93:</span>									compShips<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + colInt - s;
+<span class='lnNumb'>94:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>95:</span>							<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>96:</span>								<span class='keyword'>continue</span>;
+<span class='lnNumb'>97:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>98:</span>						<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>99:</span>							<span class='keyword'>continue</span>;
+<span class='lnNumb'>100:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>101:</span>					<span class='separator'>}</span><span class='lnComm'>// end of direction left</span>
+<span class='lnNumb'>102:</span>					<span class='lnComm'>// up</span>
+<span class='lnNumb'>103:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>dir == <span class='number'>2</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>104:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>rowInt - compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length &gt;= -<span class='number'>1</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>105:</span>							<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>106:</span>							<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>107:</span>								<span class='keyword'>if</span> <span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt -k<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>108:</span>									count++;
+<span class='lnNumb'>109:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>110:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>111:</span>							<span class='keyword'>if</span> <span class='separator'>(</span>count == compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>112:</span>								<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>113:</span>								<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = rowInt; j &gt; rowInt - compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; j--<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>114:</span>									compBoard<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>115:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>116:</span>								<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>117:</span>								<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>118:</span>									compShips<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span><span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> - <span class='separator'>(</span>s * <span class='number'>10</span><span class='separator'>)</span><span class='separator'>)</span> + colInt;
+<span class='lnNumb'>119:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>120:</span>							<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>121:</span>								<span class='keyword'>continue</span>;
+<span class='lnNumb'>122:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>123:</span>						<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>124:</span>							<span class='keyword'>continue</span>;
+<span class='lnNumb'>125:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>126:</span>					<span class='separator'>}</span><span class='lnComm'>// end of direction up</span>
+<span class='lnNumb'>127:</span>					
+<span class='lnNumb'>128:</span>					<span class='lnComm'>// down</span>
+<span class='lnNumb'>129:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>dir == <span class='number'>3</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>130:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>rowInt + compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length &lt;= <span class='number'>10</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>131:</span>							<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>132:</span>							<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>133:</span>								<span class='keyword'>if</span> <span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt + k<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>134:</span>									count++;
+<span class='lnNumb'>135:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>136:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>137:</span>							<span class='keyword'>if</span> <span class='separator'>(</span>count == compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>138:</span>								<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>139:</span>								<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = rowInt; j &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length + rowInt; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>140:</span>									compBoard<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>141:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>142:</span>								<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>143:</span>								<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; compShips<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>144:</span>									compShips<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span><span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + <span class='separator'>(</span>s * <span class='number'>10</span><span class='separator'>)</span><span class='separator'>)</span> + colInt;
+<span class='lnNumb'>145:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>146:</span>							<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>147:</span>								<span class='keyword'>continue</span>;
+<span class='lnNumb'>148:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>149:</span>						<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>150:</span>							<span class='keyword'>continue</span>;
+<span class='lnNumb'>151:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>152:</span>					<span class='separator'>}</span><span class='lnComm'>// end of direction down</span>
+<span class='lnNumb'>153:</span>					<span class='lnComm'>//printIntArr(compShips);</span>
+<span class='lnNumb'>154:</span>					i++;
+<span class='lnNumb'>155:</span>				<span class='separator'>}</span> <span class='lnComm'>// end of placing computer ships</span>
+<span class='lnNumb'>156:</span>		<span class='lnComm'>// ask player to place ships</span>
+<span class='lnNumb'>157:</span>		printBoard<span class='separator'>(</span>playerBoard<span class='separator'>)</span>;
+<span class='lnNumb'>158:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; shipNames.length;<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>159:</span>			System.out.println<span class='separator'>(</span><span class='string'>"To place your "</span> + shipNames<span class='separator'>[</span>i<span class='separator'>]</span> + <span class='string'>", enter a Row Letter followed by a Column Number:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>160:</span>			String coordinate = input.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>161:</span>			<span class='keyword'>char</span> row = coordinate.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span>;
+<span class='lnNumb'>162:</span>			<span class='keyword'>char</span> col = coordinate.charAt<span class='separator'>(</span><span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>163:</span>			<span class='lnComm'>// check validity of row and col</span>
+<span class='lnNumb'>164:</span>			<span class='lnComm'>// col has to be between a and j or A and J</span>
+<span class='lnNumb'>165:</span>			<span class='lnComm'>// row has to be between 0-9<span class='number'></span></span>
+<span class='lnNumb'>166:</span>			
+<span class='lnNumb'>167:</span>			<span class='keyword'>try</span> <span class='separator'>{</span>
+<span class='lnNumb'>168:</span>				<span class='keyword'>if</span> <span class='separator'>(</span>playerBoard<span class='separator'>[</span>Character.getNumericValue<span class='separator'>(</span>row<span class='separator'>)</span> - <span class='number'>10</span><span class='separator'>]</span><span class='separator'>[</span>Character.getNumericValue<span class='separator'>(</span>col<span class='separator'>)</span><span class='separator'>]</span> != <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>169:</span>					System.out.println<span class='separator'>(</span><span class='string'>"That spot's already taken!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>170:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>171:</span>				<span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span><span class='separator'>(</span><span class='separator'>(</span>row &gt;= <span class='char'>'A'</span> && row &lt;= <span class='char'>'J'</span><span class='separator'>)</span> || <span class='separator'>(</span>row &gt;= <span class='char'>'a'</span> && row &lt;= <span class='char'>'j'</span><span class='separator'>)</span><span class='separator'>)</span>
+<span class='lnNumb'>172:</span>						&& <span class='separator'>(</span>coordinate.length<span class='separator'>(</span><span class='separator'>)</span> == <span class='number'>2</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>173:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Enter your "</span> + shipNames<span class='separator'>[</span>i<span class='separator'>]</span> + <span class='string'>"'s direction (left, right, up, down):"</span><span class='separator'>)</span>;
+<span class='lnNumb'>174:</span>				<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>175:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Enter a valid coordinate: Row Letter followed by a Column Number"</span><span class='separator'>)</span>;
+<span class='lnNumb'>176:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>177:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>178:</span>			<span class='separator'>}</span> <span class='keyword'>catch</span> <span class='separator'>(</span>Exception e<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>179:</span>				System.out.println<span class='separator'>(</span><span class='string'>"Enter a valid coordinate: Row Letter followed by a Column Number"</span><span class='separator'>)</span>;
+<span class='lnNumb'>180:</span>				<span class='keyword'>continue</span>;
+<span class='lnNumb'>181:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>182:</span>			
+<span class='lnNumb'>183:</span>			String direction = input.next<span class='separator'>(</span><span class='separator'>)</span>;	
+<span class='lnNumb'>184:</span>			<span class='lnComm'>// check if direction exists, and remember which one</span>
+<span class='lnNumb'>185:</span>			<span class='keyword'>boolean</span> go = <span class='literal'>false</span>;
+<span class='lnNumb'>186:</span>			<span class='keyword'>while</span><span class='separator'>(</span>go == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>187:</span>				<span class='keyword'>if</span> <span class='separator'>(</span>search<span class='separator'>(</span>directions, direction<span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>188:</span>						<span class='lnComm'>// System.out.println("That's a valid direction");</span>
+<span class='lnNumb'>189:</span>						go = <span class='literal'>true</span>;
+<span class='lnNumb'>190:</span>					<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>191:</span>						System.out.println<span class='separator'>(</span><span class='string'>"Enter a valid direction: left, right, up, down"</span><span class='separator'>)</span>;
+<span class='lnNumb'>192:</span>						direction = input.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>193:</span>						<span class='lnComm'>//continue;</span>
+<span class='lnNumb'>194:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>195:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>196:</span>			<span class='keyword'>int</span> rowInt = Character.getNumericValue<span class='separator'>(</span>row<span class='separator'>)</span> - <span class='number'>10</span>; <span class='lnComm'>// -10 to get 0<span class='number'></span></span>
+<span class='lnNumb'>197:</span>			<span class='keyword'>int</span> colInt = Character.getNumericValue<span class='separator'>(</span>col<span class='separator'>)</span>;
+<span class='lnNumb'>198:</span>			<span class='lnComm'>// if direction.equals("right"): check if in bounds column + 5 has</span>
+<span class='lnNumb'>199:</span>			<span class='lnComm'>// to be less than or equal to 10,</span>
+<span class='lnNumb'>200:</span>			<span class='lnComm'>// and if there are other ships there</span>
+<span class='lnNumb'>201:</span>			<span class='keyword'>if</span> <span class='separator'>(</span>direction.equals<span class='separator'>(</span><span class='string'>"right"</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>202:</span>				<span class='keyword'>if</span> <span class='separator'>(</span>colInt + ships<span class='separator'>[</span>i<span class='separator'>]</span>.length &lt;= <span class='number'>10</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>203:</span>					<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>204:</span>					<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>205:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt + k<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>206:</span>							count++;
+<span class='lnNumb'>207:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>208:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>209:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>count == ships<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>210:</span>						<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>211:</span>						<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = colInt; j &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length + colInt; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>212:</span>							playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>213:</span>							
+<span class='lnNumb'>214:</span>							
+<span class='lnNumb'>215:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>216:</span>						<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>217:</span>						<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>218:</span>							ships<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + colInt + s;
+<span class='lnNumb'>219:</span>							<span class='lnComm'>// and also in this one to use later for checking sunk ship coordinates.</span>
+<span class='lnNumb'>220:</span>							ships_sunk<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + colInt + s;
+<span class='lnNumb'>221:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>222:</span>					<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>223:</span>						System.out.println<span class='separator'>(</span><span class='string'>"You can't put one ship on top of another!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>224:</span>						<span class='keyword'>continue</span>;
+<span class='lnNumb'>225:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>226:</span>				<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>227:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Off the Board!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>228:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>229:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>230:</span>			<span class='separator'>}</span><span class='lnComm'>// end of direction right</span>
+<span class='lnNumb'>231:</span>			<span class='keyword'>if</span> <span class='separator'>(</span>direction.equals<span class='separator'>(</span><span class='string'>"left"</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>232:</span>				<span class='keyword'>if</span> <span class='separator'>(</span>colInt - ships<span class='separator'>[</span>i<span class='separator'>]</span>.length &gt;= -<span class='number'>1</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>233:</span>					<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>234:</span>					<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>235:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt - k<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>236:</span>							count++;
+<span class='lnNumb'>237:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>238:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>239:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>count == ships<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>240:</span>						<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>241:</span>						<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = colInt; j &gt; colInt - ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; j--<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>242:</span>							playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>243:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>244:</span>						<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>245:</span>						<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>246:</span>							ships<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + colInt - s;
+<span class='lnNumb'>247:</span>							<span class='lnComm'>// and also in this one to use later for checking sunk ship coordinates.</span>
+<span class='lnNumb'>248:</span>							ships_sunk<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + colInt - s;
+<span class='lnNumb'>249:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>250:</span>					<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>251:</span>						System.out.println<span class='separator'>(</span><span class='string'>"You can't put one ship on top of another!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>252:</span>						<span class='keyword'>continue</span>;
+<span class='lnNumb'>253:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>254:</span>				<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>255:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Off the Board!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>256:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>257:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>258:</span>			<span class='separator'>}</span><span class='lnComm'>// end of direction left</span>
+<span class='lnNumb'>259:</span>			
+<span class='lnNumb'>260:</span>			<span class='keyword'>if</span> <span class='separator'>(</span>direction.equals<span class='separator'>(</span><span class='string'>"up"</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>261:</span>				<span class='keyword'>if</span> <span class='separator'>(</span>rowInt - ships<span class='separator'>[</span>i<span class='separator'>]</span>.length &gt;= -<span class='number'>1</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>262:</span>					<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>263:</span>					<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>264:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt -k<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>265:</span>							count++;
+<span class='lnNumb'>266:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>267:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>268:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>count == ships<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>269:</span>						<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>270:</span>						<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = rowInt; j &gt; rowInt - ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; j--<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>271:</span>							playerBoard<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>272:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>273:</span>						<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>274:</span>						<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>275:</span>							ships<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span><span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> - <span class='separator'>(</span>s * <span class='number'>10</span><span class='separator'>)</span><span class='separator'>)</span> + colInt;
+<span class='lnNumb'>276:</span>							<span class='lnComm'>// and also in this one to use later for checking sunk ship coordinates.</span>
+<span class='lnNumb'>277:</span>							ships_sunk<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span><span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> - <span class='separator'>(</span>s * <span class='number'>10</span><span class='separator'>)</span><span class='separator'>)</span> + colInt;
+<span class='lnNumb'>278:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>279:</span>					<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>280:</span>						System.out.println<span class='separator'>(</span><span class='string'>"You can't put one ship on top of another!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>281:</span>						<span class='keyword'>continue</span>;
+<span class='lnNumb'>282:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>283:</span>				<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>284:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Off the Board!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>285:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>286:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>287:</span>			<span class='separator'>}</span><span class='lnComm'>// end of direction up</span>
+<span class='lnNumb'>288:</span>			
+<span class='lnNumb'>289:</span>			<span class='lnComm'>// down</span>
+<span class='lnNumb'>290:</span>			<span class='keyword'>if</span> <span class='separator'>(</span>direction.equals<span class='separator'>(</span><span class='string'>"down"</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>291:</span>				<span class='keyword'>if</span> <span class='separator'>(</span>rowInt + ships<span class='separator'>[</span>i<span class='separator'>]</span>.length &lt;= <span class='number'>10</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>292:</span>					<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>293:</span>					<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> k = <span class='number'>0</span>; k &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; k++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>294:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt + k<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>295:</span>							count++;
+<span class='lnNumb'>296:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>297:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>298:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>count == ships<span class='separator'>[</span>i<span class='separator'>]</span>.length<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>299:</span>						<span class='lnComm'>// if everything OK, add ship to array</span>
+<span class='lnNumb'>300:</span>						<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = rowInt; j &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length + rowInt; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>301:</span>							playerBoard<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'o'</span>;
+<span class='lnNumb'>302:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>303:</span>						<span class='lnComm'>// put the ships in ships array	</span>
+<span class='lnNumb'>304:</span>						<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> s = <span class='number'>0</span>; s &lt; ships<span class='separator'>[</span>i<span class='separator'>]</span>.length; s++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>305:</span>							ships<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span><span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + <span class='separator'>(</span>s * <span class='number'>10</span><span class='separator'>)</span><span class='separator'>)</span> + colInt;
+<span class='lnNumb'>306:</span>							<span class='lnComm'>// and also in this one to use later for checking sunk ship coordinates.</span>
+<span class='lnNumb'>307:</span>							ships_sunk<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>s<span class='separator'>]</span> = <span class='separator'>(</span><span class='separator'>(</span>rowInt * <span class='number'>10</span><span class='separator'>)</span> + <span class='separator'>(</span>s * <span class='number'>10</span><span class='separator'>)</span><span class='separator'>)</span> + colInt;
+<span class='lnNumb'>308:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>309:</span>					<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>310:</span>						System.out.println<span class='separator'>(</span><span class='string'>"You can't put one ship on top of another!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>311:</span>						<span class='keyword'>continue</span>;
+<span class='lnNumb'>312:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>313:</span>				<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>314:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Off the Board!, try again:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>315:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>316:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>317:</span>			<span class='separator'>}</span><span class='lnComm'>// end of direction down</span>
+<span class='lnNumb'>318:</span>			
+<span class='lnNumb'>319:</span>			printBoard<span class='separator'>(</span>playerBoard<span class='separator'>)</span>;
+<span class='lnNumb'>320:</span>			<span class='lnComm'>//printIntArr(ships);</span>
+<span class='lnNumb'>321:</span>			i++;
+<span class='lnNumb'>322:</span>		<span class='separator'>}</span> <span class='lnComm'>// end of placing player ships</span>
+<span class='lnNumb'>323:</span>		
+<span class='lnNumb'>324:</span>		<span class='lnComm'>//printIntArr(compShips);</span>
+<span class='lnNumb'>325:</span>		
+<span class='lnNumb'>326:</span>		System.out.println<span class='separator'>(</span><span class='string'>"All your ships are in place! Now let's start shootin'!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>327:</span>		<span class='lnComm'>// TODO remove:</span>
+<span class='lnNumb'>328:</span>		<span class='lnComm'>// printIntArr(ships);</span>
+<span class='lnNumb'>329:</span>		
+<span class='lnNumb'>330:</span>		<span class='keyword'>boolean</span> win = <span class='literal'>false</span>;
+<span class='lnNumb'>331:</span>		<span class='keyword'>int</span> player = <span class='number'>1</span>; <span class='lnComm'>// 1 is human, 0 is computer</span>
+<span class='lnNumb'>332:</span>		<span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> hits = <span class='separator'>{</span>-<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1</span>, -<span class='number'>1<span class='separator'>}</span></span>; <span class='lnComm'>// </span>
+<span class='lnNumb'>333:</span>		<span class='keyword'>int</span> hitsIndex = -<span class='number'>1</span>;
+<span class='lnNumb'>334:</span>		
+<span class='lnNumb'>335:</span>		<span class='lnComm'>// game loop</span>
+<span class='lnNumb'>336:</span>		gameLoop:
+<span class='lnNumb'>337:</span>		<span class='keyword'>while</span><span class='separator'>(</span>win == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>338:</span>			
+<span class='lnNumb'>339:</span>		<span class='keyword'>if</span><span class='separator'>(</span>player == <span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>340:</span>			System.out.println<span class='separator'>(</span><span class='string'>"++++++++++++++++++++++++++++++++++++++++++++++ \n Computer Board:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>341:</span>			<span class='lnComm'>// TODO change to printBoard(compBoardView);</span>
+<span class='lnNumb'>342:</span>			<span class='lnComm'>// printBoard(compBoard);</span>
+<span class='lnNumb'>343:</span>			printBoard<span class='separator'>(</span>compBoardView<span class='separator'>)</span>;
+<span class='lnNumb'>344:</span>			 System.out.println<span class='separator'>(</span><span class='string'>"Enter a coordinate on the computer's board (ex: A0):"</span><span class='separator'>)</span>;
+<span class='lnNumb'>345:</span>			 String coordinate = input.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>346:</span>				<span class='keyword'>char</span> row = coordinate.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span>;
+<span class='lnNumb'>347:</span>				<span class='keyword'>char</span> col = coordinate.charAt<span class='separator'>(</span><span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>348:</span>				
+<span class='lnNumb'>349:</span>				<span class='keyword'>int</span> rowInt = Character.getNumericValue<span class='separator'>(</span>row<span class='separator'>)</span> - <span class='number'>10</span>; <span class='lnComm'>// -10 to get 0<span class='number'></span></span>
+<span class='lnNumb'>350:</span>				<span class='keyword'>int</span> colInt = Character.getNumericValue<span class='separator'>(</span>col<span class='separator'>)</span>;
+<span class='lnNumb'>351:</span>				
+<span class='lnNumb'>352:</span>				
+<span class='lnNumb'>353:</span>				<span class='keyword'>try</span> <span class='separator'>{</span>
+<span class='lnNumb'>354:</span>					
+<span class='lnNumb'>355:</span>					<span class='keyword'>if</span> <span class='separator'>(</span><span class='separator'>(</span><span class='separator'>(</span>row &gt;= <span class='char'>'A'</span> || row &lt;= <span class='char'>'J'</span><span class='separator'>)</span> && <span class='separator'>(</span>row &gt;= <span class='char'>'a'</span> || row &lt;= <span class='char'>'j'</span><span class='separator'>)</span><span class='separator'>)</span> && coordinate.length<span class='separator'>(</span><span class='separator'>)</span> == <span class='number'>2</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>356:</span>						   
+<span class='lnNumb'>357:</span>						<span class='keyword'>if</span> <span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>358:</span>							<span class='lnComm'>//System.out.println("You hit a ship at index: "+ hitShipRow+ ", box: "+ hitShipBox);</span>
+<span class='lnNumb'>359:</span>							System.out.println<span class='separator'>(</span><span class='string'>"Yay! - You got a hit!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>360:</span>							
+<span class='lnNumb'>361:</span>						<span class='lnComm'>//  store in the computer Boards arrays</span>
+<span class='lnNumb'>362:</span>							compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'*'</span>;
+<span class='lnNumb'>363:</span>							compBoardView<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'*'</span>;
+<span class='lnNumb'>364:</span>							
+<span class='lnNumb'>365:</span>							
+<span class='lnNumb'>366:</span>							<span class='lnComm'>// find the location of the hit ship in the ships array</span>
+<span class='lnNumb'>367:</span>							<span class='keyword'>int</span> hitShipRow = whichShip<span class='separator'>(</span>compShips, rowInt, colInt<span class='separator'>)</span>; <span class='lnComm'>// returns index of hit ship in ships array</span>
+<span class='lnNumb'>368:</span>							<span class='keyword'>int</span> hitShipBox = whichShipCol<span class='separator'>(</span>compShips, rowInt, colInt<span class='separator'>)</span>; <span class='lnComm'>// returns index of hit ship box in ship</span>
+<span class='lnNumb'>369:</span>							
+<span class='lnNumb'>370:</span>							compShips<span class='separator'>[</span>hitShipRow<span class='separator'>]</span><span class='separator'>[</span>hitShipBox<span class='separator'>]</span> = -<span class='number'>1</span>;
+<span class='lnNumb'>371:</span>							
+<span class='lnNumb'>372:</span>							
+<span class='lnNumb'>373:</span>							<span class='lnComm'>// check if hit ship was sunk (all boxes in ship equal -1)<span class='separator'></span></span>
+<span class='lnNumb'>374:</span>							<span class='keyword'>if</span><span class='separator'>(</span>isSunk<span class='separator'>(</span>compShips, hitShipRow<span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>375:</span>								System.out.println<span class='separator'>(</span><span class='string'>"And... you sunk the "</span>+shipNames<span class='separator'>[</span>hitShipRow<span class='separator'>]</span> + <span class='string'>"!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>376:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>377:</span>							
+<span class='lnNumb'>378:</span>							<span class='lnComm'>// check if ALL ships were sunk. </span>
+<span class='lnNumb'>379:</span>							<span class='keyword'>if</span><span class='separator'>(</span>allSunk<span class='separator'>(</span>compShips<span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>380:</span>								System.out.println<span class='separator'>(</span><span class='string'>"++++++++++++++++++++++++++++++++++++++++++++++ \n Computer Board:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>381:</span>								printBoard<span class='separator'>(</span>compBoardView<span class='separator'>)</span>;
+<span class='lnNumb'>382:</span>								System.out.println<span class='separator'>(</span><span class='string'>"You win!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>383:</span>								<span class='keyword'>break</span>;
+<span class='lnNumb'>384:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>385:</span>							
+<span class='lnNumb'>386:</span>						<span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>'-'</span> || compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>'*'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>387:</span>							System.out.println<span class='separator'>(</span><span class='string'>"You tried that before, have another go..."</span><span class='separator'>)</span>;
+<span class='lnNumb'>388:</span>							<span class='keyword'>continue</span>;
+<span class='lnNumb'>389:</span>						<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>390:</span>							
+<span class='lnNumb'>391:</span>							<span class='lnComm'>//  store in array</span>
+<span class='lnNumb'>392:</span>							compBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'-'</span>;
+<span class='lnNumb'>393:</span>							compBoardView<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'-'</span>;
+<span class='lnNumb'>394:</span>							System.out.println<span class='separator'>(</span><span class='string'>"Oh well, you missed..."</span><span class='separator'>)</span>;
+<span class='lnNumb'>395:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>396:</span>					<span class='separator'>}</span> <span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>397:</span>						 System.out.println<span class='separator'>(</span><span class='string'>"Enter a valid coordinate: Row Letter followed by a Column Number"</span><span class='separator'>)</span>;
+<span class='lnNumb'>398:</span>						 <span class='keyword'>continue</span>;
+<span class='lnNumb'>399:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>400:</span>				<span class='separator'>}</span> <span class='keyword'>catch</span> <span class='separator'>(</span>Exception e<span class='separator'>)</span> <span class='separator'>{</span> <span class='lnComm'>// if somebody enters number followed by letter</span>
+<span class='lnNumb'>401:</span>					System.out.println<span class='separator'>(</span><span class='string'>"Enter a valid coordinate: Row Letter followed by a Column Number"</span><span class='separator'>)</span>;
+<span class='lnNumb'>402:</span>					<span class='keyword'>continue</span>;
+<span class='lnNumb'>403:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>404:</span>				
+<span class='lnNumb'>405:</span>				
+<span class='lnNumb'>406:</span>			<span class='separator'>}</span><span class='lnComm'>// end player 1(human) actions</span>
+<span class='lnNumb'>407:</span>		<span class='lnComm'>// computer actions (AI)<span class='separator'></span></span>
+<span class='lnNumb'>408:</span>		
+<span class='lnNumb'>409:</span>		
+<span class='lnNumb'>410:</span>		<span class='keyword'>if</span><span class='separator'>(</span>player == <span class='number'>0</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>411:</span>			
+<span class='lnNumb'>412:</span>			<span class='keyword'>int</span> rowInt = <span class='number'>0</span>; 
+<span class='lnNumb'>413:</span>			<span class='keyword'>int</span> colInt = <span class='number'>0</span>;
+<span class='lnNumb'>414:</span>			
+<span class='lnNumb'>415:</span>			<span class='keyword'>int</span> row = <span class='number'>0</span>;
+<span class='lnNumb'>416:</span>			<span class='keyword'>int</span> col = <span class='number'>0</span>;
+<span class='lnNumb'>417:</span>			
+<span class='lnNumb'>418:</span>			<span class='keyword'>if</span><span class='separator'>(</span>isEmpty<span class='separator'>(</span>hits, -<span class='number'>1</span><span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>419:</span>				<span class='lnComm'>// if there are no partially hit ships</span>
+<span class='lnNumb'>420:</span>				<span class='lnComm'>// generate random hit 0-9, 0-9<span class='number'></span></span>
+<span class='lnNumb'>421:</span>				
+<span class='lnNumb'>422:</span>				<span class='lnComm'>//TODO smarter board search instead of random, based on binary search principle maybe? Or probability? Or something even smarter I don't know about yet :)<span class='separator'></span></span>
+<span class='lnNumb'>423:</span>				
+<span class='lnNumb'>424:</span>				Random hit = <span class='keyword'>new</span> Random<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>425:</span>				<span class='keyword'>int</span> rowRan = hit.nextInt<span class='separator'>(</span><span class='number'>9</span><span class='separator'>)</span>;
+<span class='lnNumb'>426:</span>				<span class='keyword'>int</span> colRan = hit.nextInt<span class='separator'>(</span><span class='number'>9</span><span class='separator'>)</span>;
+<span class='lnNumb'>427:</span>				
+<span class='lnNumb'>428:</span>				<span class='keyword'>while</span><span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowRan<span class='separator'>]</span><span class='separator'>[</span>colRan<span class='separator'>]</span> == <span class='char'>'-'</span>  || playerBoard<span class='separator'>[</span>rowRan<span class='separator'>]</span><span class='separator'>[</span>colRan<span class='separator'>]</span> == <span class='char'>'*'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>429:</span>					
+<span class='lnNumb'>430:</span>					rowRan = hit.nextInt<span class='separator'>(</span><span class='number'>9</span><span class='separator'>)</span>;
+<span class='lnNumb'>431:</span>					colRan = hit.nextInt<span class='separator'>(</span><span class='number'>9</span><span class='separator'>)</span>;
+<span class='lnNumb'>432:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>433:</span>				rowInt = rowRan;
+<span class='lnNumb'>434:</span>				colInt = colRan;
+<span class='lnNumb'>435:</span>				
+<span class='lnNumb'>436:</span>				
+<span class='lnNumb'>437:</span>			<span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>438:</span>				<span class='lnComm'>// find a partially hit ship </span>
+<span class='lnNumb'>439:</span>				<span class='lnComm'>// by finding coordinates in the hits array: </span>
+<span class='lnNumb'>440:</span>				row = hits<span class='separator'>[</span>hitsIndex<span class='separator'>]</span>/<span class='number'>10</span>;
+<span class='lnNumb'>441:</span>				col = hits<span class='separator'>[</span>hitsIndex<span class='separator'>]</span>%<span class='number'>10</span>;
+<span class='lnNumb'>442:</span>				<span class='keyword'>int</span> incrementRow = row;
+<span class='lnNumb'>443:</span>				<span class='keyword'>int</span> incrementCol = col;
+<span class='lnNumb'>444:</span>				
+<span class='lnNumb'>445:</span>				<span class='keyword'>if</span><span class='separator'>(</span>isSingle<span class='separator'>(</span>hits, -<span class='number'>1</span><span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// ship was only hit once if hits contains only 1 value other than -1 </span>
+<span class='lnNumb'>446:</span>					<span class='lnComm'>// try all 4 directions</span>
+<span class='lnNumb'>447:</span>					<span class='lnComm'>// TODO randomize order of direction - use a switch instead of if/else ? </span>
+<span class='lnNumb'>448:</span>					
+<span class='lnNumb'>449:</span>					<span class='lnComm'>// check if potential hit is in bounds and is a space or o</span>
+<span class='lnNumb'>450:</span>					<span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>row - <span class='number'>1</span> &gt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row - <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row - <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>'o'</span> <span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>  <span class='lnComm'>// try going up</span>
+<span class='lnNumb'>451:</span>						rowInt = row - <span class='number'>1</span>;
+<span class='lnNumb'>452:</span>						colInt = col;
+<span class='lnNumb'>453:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>row + <span class='number'>1</span> &lt;= <span class='number'>9</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row + <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row + <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// try going down</span>
+<span class='lnNumb'>454:</span>						rowInt = row + <span class='number'>1</span>;
+<span class='lnNumb'>455:</span>						colInt = col;
+<span class='lnNumb'>456:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>col + <span class='number'>1</span> &lt;= <span class='number'>9</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col + <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col + <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// try going right</span>
+<span class='lnNumb'>457:</span>						rowInt = row;
+<span class='lnNumb'>458:</span>						colInt = col + <span class='number'>1</span>;
+<span class='lnNumb'>459:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>col - <span class='number'>1</span> &gt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col - <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col - <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// go left</span>
+<span class='lnNumb'>460:</span>						rowInt = row;
+<span class='lnNumb'>461:</span>						colInt = col - <span class='number'>1</span>;
+<span class='lnNumb'>462:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>463:</span>					
+<span class='lnNumb'>464:</span>					
+<span class='lnNumb'>465:</span>				<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>isVertical<span class='separator'>(</span>hits<span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// ship is vertical - check hits array</span>
+<span class='lnNumb'>466:</span>					<span class='lnComm'>// try up else down</span>
+<span class='lnNumb'>467:</span>					<span class='lnComm'>// TODO randomize order of direction (up or down first) - or maybe that's not a good idea...</span>
+<span class='lnNumb'>468:</span>										
+<span class='lnNumb'>469:</span>					<span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>row - <span class='number'>1</span> &gt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row - <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row - <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>  <span class='lnComm'>// try going up</span>
+<span class='lnNumb'>470:</span>						rowInt = row - <span class='number'>1</span>;
+<span class='lnNumb'>471:</span>						colInt = col;
+<span class='lnNumb'>472:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>row + <span class='number'>1</span> &lt;= <span class='number'>9</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row + <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row + <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// go down</span>
+<span class='lnNumb'>473:</span>						rowInt = row + <span class='number'>1</span>;
+<span class='lnNumb'>474:</span>						colInt = col;
+<span class='lnNumb'>475:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>col + <span class='number'>1</span> &lt;= <span class='number'>9</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col + <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col + <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// try going right</span>
+<span class='lnNumb'>476:</span>						rowInt = row;
+<span class='lnNumb'>477:</span>						colInt = col + <span class='number'>1</span>;
+<span class='lnNumb'>478:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>col - <span class='number'>1</span> &lt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col - <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col - <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// go left</span>
+<span class='lnNumb'>479:</span>						rowInt = row;
+<span class='lnNumb'>480:</span>						colInt = col - <span class='number'>1</span>;
+<span class='lnNumb'>481:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>482:</span>					
+<span class='lnNumb'>483:</span>					
+<span class='lnNumb'>484:</span>				<span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span> <span class='lnComm'>// ship is horizontal</span>
+<span class='lnNumb'>485:</span>					<span class='lnComm'>// try left else right</span>
+<span class='lnNumb'>486:</span>					<span class='lnComm'>// TODO randomize order of direction (left or right first)<span class='separator'></span></span>
+<span class='lnNumb'>487:</span>					
+<span class='lnNumb'>488:</span>					<span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>col + <span class='number'>1</span> &lt;= <span class='number'>9</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col + <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col + <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// try going right</span>
+<span class='lnNumb'>489:</span>						rowInt = row;
+<span class='lnNumb'>490:</span>						colInt = col + <span class='number'>1</span>;
+<span class='lnNumb'>491:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span><span class='separator'>(</span>col - <span class='number'>1</span> &gt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col - <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row<span class='separator'>]</span><span class='separator'>[</span>col - <span class='number'>1</span><span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// go left</span>
+<span class='lnNumb'>492:</span>						rowInt = row;
+<span class='lnNumb'>493:</span>						colInt = col - <span class='number'>1</span>;
+<span class='lnNumb'>494:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>row - <span class='number'>1</span> &gt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row - <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row - <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>  <span class='lnComm'>// try going up</span>
+<span class='lnNumb'>495:</span>						rowInt = row - <span class='number'>1</span>;
+<span class='lnNumb'>496:</span>						colInt = col;
+<span class='lnNumb'>497:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>row + <span class='number'>1</span> &lt;= <span class='number'>9</span><span class='separator'>)</span> && <span class='separator'>(</span>playerBoard<span class='separator'>[</span>row + <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>' '</span> || playerBoard<span class='separator'>[</span>row + <span class='number'>1</span><span class='separator'>]</span><span class='separator'>[</span>col<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// go down</span>
+<span class='lnNumb'>498:</span>						rowInt = row + <span class='number'>1</span>;
+<span class='lnNumb'>499:</span>						colInt = col;
+<span class='lnNumb'>500:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>501:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>502:</span>				
+<span class='lnNumb'>503:</span>				
+<span class='lnNumb'>504:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>505:</span>					   
+<span class='lnNumb'>506:</span>					<span class='keyword'>if</span> <span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>'o'</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>507:</span>						<span class='lnComm'>//System.out.println("You hit a ship at index: "+ hitShipRow+ ", box: "+ hitShipBox);</span>
+<span class='lnNumb'>508:</span>						System.out.println<span class='separator'>(</span><span class='string'>"Computer got a hit!"</span> + rowInt+<span class='string'>":"</span>+colInt<span class='separator'>)</span>;
+<span class='lnNumb'>509:</span>						
+<span class='lnNumb'>510:</span>						<span class='lnComm'>//  store in the playerBoard array</span>
+<span class='lnNumb'>511:</span>						playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'*'</span>;
+<span class='lnNumb'>512:</span>						hits<span class='separator'>[</span>hitsIndex + <span class='number'>1</span><span class='separator'>]</span> = rowInt * <span class='number'>10</span> + colInt;
+<span class='lnNumb'>513:</span>						
+<span class='lnNumb'>514:</span>						<span class='lnComm'>// TODO remove</span>
+<span class='lnNumb'>515:</span>						<span class='lnComm'>// printNumArr(hits);</span>
+<span class='lnNumb'>516:</span>						
+<span class='lnNumb'>517:</span>						hitsIndex++;
+<span class='lnNumb'>518:</span>						
+<span class='lnNumb'>519:</span>						
+<span class='lnNumb'>520:</span>						<span class='lnComm'>// find the location of the hit ship in the ships array</span>
+<span class='lnNumb'>521:</span>						<span class='keyword'>int</span> hitShipRow = whichShip<span class='separator'>(</span>ships, rowInt, colInt<span class='separator'>)</span>; <span class='lnComm'>// returns index of hit ship in ships array</span>
+<span class='lnNumb'>522:</span>						<span class='keyword'>int</span> hitShipBox = whichShipCol<span class='separator'>(</span>ships, rowInt, colInt<span class='separator'>)</span>; <span class='lnComm'>// returns index of hit ship box in the hit ship</span>
+<span class='lnNumb'>523:</span>						
+<span class='lnNumb'>524:</span>						<span class='lnComm'>// set it to -1 for later use, to check if ship is sunk</span>
+<span class='lnNumb'>525:</span>						ships<span class='separator'>[</span>hitShipRow<span class='separator'>]</span><span class='separator'>[</span>hitShipBox<span class='separator'>]</span> = -<span class='number'>1</span>; 
+<span class='lnNumb'>526:</span>						
+<span class='lnNumb'>527:</span>						
+<span class='lnNumb'>528:</span>						<span class='lnComm'>// check if hit ship was sunk (all boxes in ship equal -1)<span class='separator'></span></span>
+<span class='lnNumb'>529:</span>						<span class='keyword'>if</span><span class='separator'>(</span>isSunk<span class='separator'>(</span>ships, hitShipRow<span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>530:</span>							System.out.println<span class='separator'>(</span><span class='string'>"And... computer sunk your "</span>+shipNames<span class='separator'>[</span>hitShipRow<span class='separator'>]</span> + <span class='string'>"!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>531:</span>							
+<span class='lnNumb'>532:</span>							<span class='lnComm'>// find the coordinates for ships[hitShipRow] and remove them from hits</span>
+<span class='lnNumb'>533:</span>							<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; ships_sunk<span class='separator'>[</span>hitShipRow<span class='separator'>]</span>.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>534:</span>								<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; hits.length; j++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>535:</span>									<span class='keyword'>if</span><span class='separator'>(</span>ships_sunk<span class='separator'>[</span>hitShipRow<span class='separator'>]</span><span class='separator'>[</span>i<span class='separator'>]</span> == hits<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>536:</span>										hits<span class='separator'>[</span>j<span class='separator'>]</span> = -<span class='number'>1</span>;
+<span class='lnNumb'>537:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>538:</span>								<span class='separator'>}</span>
+<span class='lnNumb'>539:</span>									
+<span class='lnNumb'>540:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>541:</span>							
+<span class='lnNumb'>542:</span>							<span class='lnComm'>// </span>
+<span class='lnNumb'>543:</span>							<span class='lnComm'>// shift all coordinates to the left, and set the hitsIndex to last actual coordinate</span>
+<span class='lnNumb'>544:</span>							sortHits<span class='separator'>(</span>hits<span class='separator'>)</span>;
+<span class='lnNumb'>545:</span>							
+<span class='lnNumb'>546:</span>							<span class='lnComm'>// we'll be left with just hits but not sunk ships in the hits array.</span>
+<span class='lnNumb'>547:</span>							hitsIndex = lastIndex<span class='separator'>(</span>hits<span class='separator'>)</span>;
+<span class='lnNumb'>548:</span>							
+<span class='lnNumb'>549:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>550:</span>						
+<span class='lnNumb'>551:</span>						<span class='lnComm'>// check if ALL ships were sunk. </span>
+<span class='lnNumb'>552:</span>						<span class='keyword'>if</span><span class='separator'>(</span>allSunk<span class='separator'>(</span>ships<span class='separator'>)</span> == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>553:</span>							System.out.println<span class='separator'>(</span><span class='string'>"++++++++++++++++++++++++++++++++++++++++++++++ \n Your Board:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>554:</span>							printBoard<span class='separator'>(</span>playerBoard<span class='separator'>)</span>;
+<span class='lnNumb'>555:</span>							System.out.println<span class='separator'>(</span><span class='string'>"Oh well - Computer won..."</span><span class='separator'>)</span>;
+<span class='lnNumb'>556:</span>							<span class='keyword'>return</span>;
+<span class='lnNumb'>557:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>558:</span>						
+<span class='lnNumb'>559:</span>					<span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>'-'</span> || playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>'*'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>560:</span>						hitsIndex = <span class='number'>0</span>; <span class='lnComm'>// TODO let's try hitting in a different direction - (needs work)<span class='separator'></span></span>
+<span class='lnNumb'>561:</span>						<span class='keyword'>continue</span> gameLoop;
+<span class='lnNumb'>562:</span>					<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> == <span class='char'>' '</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>563:</span>						
+<span class='lnNumb'>564:</span>						<span class='lnComm'>//  store the miss in playerBoard array</span>
+<span class='lnNumb'>565:</span>						playerBoard<span class='separator'>[</span>rowInt<span class='separator'>]</span><span class='separator'>[</span>colInt<span class='separator'>]</span> = <span class='char'>'-'</span>;
+<span class='lnNumb'>566:</span>						System.out.println<span class='separator'>(</span><span class='string'>"Computer missed - Yay for you!"</span><span class='separator'>)</span>;
+<span class='lnNumb'>567:</span>						<span class='lnComm'>// TODO remove</span>
+<span class='lnNumb'>568:</span>						 System.out.println<span class='separator'>(</span><span class='string'>"Computer missed at: "</span> + rowInt+<span class='string'>":"</span>+colInt<span class='separator'>)</span>;
+<span class='lnNumb'>569:</span>						<span class='lnComm'>// printNumArr(hits);</span>
+<span class='lnNumb'>570:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>571:</span>				
+<span class='lnNumb'>572:</span>			
+<span class='lnNumb'>573:</span>			System.out.println<span class='separator'>(</span><span class='string'>"++++++++++++++++++++++++++++++++++++++++++++++ \n Your Board:"</span><span class='separator'>)</span>;
+<span class='lnNumb'>574:</span>			printBoard<span class='separator'>(</span>playerBoard<span class='separator'>)</span>;
+<span class='lnNumb'>575:</span>			
+<span class='lnNumb'>576:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>577:</span>		
+<span class='lnNumb'>578:</span>		<span class='lnComm'>// toggle player...</span>
+<span class='lnNumb'>579:</span>		<span class='keyword'>if</span> <span class='separator'>(</span>player == <span class='number'>1</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>580:</span>			player = <span class='number'>0</span>;
+<span class='lnNumb'>581:</span>		<span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>582:</span>			player = <span class='number'>1</span>;
+<span class='lnNumb'>583:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>584:</span>	<span class='separator'>}</span><span class='lnComm'>// end game loop</span>
+<span class='lnNumb'>585:</span>		
+<span class='lnNumb'>586:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>587:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> printBoard<span class='separator'>(</span><span class='keyword'>char</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>588:</span>		System.out.print<span class='separator'>(</span><span class='string'>"  "</span><span class='separator'>)</span>;
+<span class='lnNumb'>589:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> col = <span class='number'>0</span>; col &lt; array.length; col++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>590:</span>			System.out.printf<span class='separator'>(</span><span class='string'>"%-1s %-2d"</span>, <span class='string'>" "</span>, col<span class='separator'>)</span>;
+<span class='lnNumb'>591:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>592:</span>		System.out.println<span class='separator'>(</span><span class='string'>"\n   -----------------------------------------"</span><span class='separator'>)</span>;
+<span class='lnNumb'>593:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; array.length; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>594:</span>			System.out.printf<span class='separator'>(</span><span class='string'>"%-2c"</span>, <span class='char'>'A'</span> + j<span class='separator'>)</span>;
+<span class='lnNumb'>595:</span>			<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>596:</span>				System.out.printf<span class='separator'>(</span><span class='string'>"%-1s %-2c"</span>, <span class='string'>"|"</span>, array<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>)</span>;
+<span class='lnNumb'>597:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>598:</span>			System.out.println<span class='separator'>(</span><span class='string'>"|\n   -----------------------------------------"</span><span class='separator'>)</span>;
+<span class='lnNumb'>599:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>600:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>601:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> search<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> array, String str<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>602:</span>		<span class='keyword'>boolean</span> found = <span class='literal'>false</span>;
+<span class='lnNumb'>603:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>604:</span>			<span class='keyword'>if</span> <span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span>.equals<span class='separator'>(</span>str<span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>605:</span>				found = <span class='literal'>true</span>;
+<span class='lnNumb'>606:</span>				<span class='keyword'>break</span>; <span class='lnComm'>// no need to keep searching if str is found</span>
+<span class='lnNumb'>607:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>608:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>609:</span>		<span class='keyword'>return</span> found;
+<span class='lnNumb'>610:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>611:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>int</span> whichShip<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> array, <span class='keyword'>int</span> row, <span class='keyword'>int</span> col<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>612:</span>	 <span class='lnComm'>//find which ship got hit (find coordinate in ships array, and return the index)<span class='separator'></span></span>
+<span class='lnNumb'>613:</span>		<span class='keyword'>int</span> result = <span class='number'>0</span>;
+<span class='lnNumb'>614:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>615:</span>			<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; array<span class='separator'>[</span>i<span class='separator'>]</span>.length; j++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>616:</span>				
+<span class='lnNumb'>617:</span>				<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> == <span class='separator'>(</span>row * <span class='number'>10</span><span class='separator'>)</span> + col<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>618:</span>					result = i;
+<span class='lnNumb'>619:</span>					<span class='keyword'>break</span>;
+<span class='lnNumb'>620:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>621:</span>				
+<span class='lnNumb'>622:</span>			 <span class='separator'>}</span>
+<span class='lnNumb'>623:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>624:</span>		<span class='keyword'>return</span> result;
+<span class='lnNumb'>625:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>626:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>int</span> whichShipCol<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> array, <span class='keyword'>int</span> row, <span class='keyword'>int</span> col<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>627:</span>		 <span class='lnComm'>//find where ship got hit (find coordinate in ships array, and return the col index)<span class='separator'></span></span>
+<span class='lnNumb'>628:</span>			<span class='keyword'>int</span> result = <span class='number'>0</span>;
+<span class='lnNumb'>629:</span>			<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>630:</span>				<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; array<span class='separator'>[</span>i<span class='separator'>]</span>.length; j++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>631:</span>					
+<span class='lnNumb'>632:</span>					<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> == <span class='separator'>(</span>row * <span class='number'>10</span><span class='separator'>)</span> + col<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>633:</span>						result = j;
+<span class='lnNumb'>634:</span>						<span class='keyword'>break</span>;
+<span class='lnNumb'>635:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>636:</span>					
+<span class='lnNumb'>637:</span>				 <span class='separator'>}</span>
+<span class='lnNumb'>638:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>639:</span>			<span class='keyword'>return</span> result;
+<span class='lnNumb'>640:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>641:</span>	
+<span class='lnNumb'>642:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> isSunk<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> array, <span class='keyword'>int</span> hitShip<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>643:</span>		<span class='keyword'>boolean</span> sunk = <span class='literal'>false</span>;
+<span class='lnNumb'>644:</span>		<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>645:</span>			<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array<span class='separator'>[</span>hitShip<span class='separator'>]</span>.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>646:</span>				<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>hitShip<span class='separator'>]</span><span class='separator'>[</span>i<span class='separator'>]</span> == -<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>647:</span>					count++;
+<span class='lnNumb'>648:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>649:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>650:</span>			<span class='keyword'>if</span><span class='separator'>(</span>count == array<span class='separator'>[</span>hitShip<span class='separator'>]</span>.length<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>651:</span>				sunk = <span class='literal'>true</span>;
+<span class='lnNumb'>652:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>653:</span>		<span class='keyword'>return</span> sunk;
+<span class='lnNumb'>654:</span>		
+<span class='lnNumb'>655:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>656:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> allSunk<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>657:</span>		<span class='keyword'>boolean</span> sunk = <span class='literal'>false</span>;
+<span class='lnNumb'>658:</span>		<span class='keyword'>int</span> count = <span class='number'>0</span>; <span class='lnComm'>// where value == -1<span class='number'></span></span>
+<span class='lnNumb'>659:</span>		<span class='keyword'>int</span> countInners = <span class='number'>0</span>; <span class='lnComm'>// the length of an inner array</span>
+<span class='lnNumb'>660:</span>		
+<span class='lnNumb'>661:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>662:</span>			<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; array<span class='separator'>[</span>i<span class='separator'>]</span>.length; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>663:</span>				<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>[</span>j<span class='separator'>]</span> == -<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>664:</span>					count++;
+<span class='lnNumb'>665:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>666:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>667:</span>			countInners += 	array<span class='separator'>[</span>i<span class='separator'>]</span>.length;
+<span class='lnNumb'>668:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>669:</span>		<span class='keyword'>if</span><span class='separator'>(</span>count == countInners<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>670:</span>			sunk = <span class='literal'>true</span>;
+<span class='lnNumb'>671:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>672:</span>		<span class='keyword'>return</span> sunk;
+<span class='lnNumb'>673:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>674:</span>	
+<span class='lnNumb'>675:</span>	
+<span class='lnNumb'>676:</span>	<span class='lnComm'>// sort highest to lowest</span>
+<span class='lnNumb'>677:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> sortHits<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span><span class='separator'>{</span> 
+<span class='lnNumb'>678:</span>		<span class='keyword'>int</span> temp = <span class='number'>0</span>;
+<span class='lnNumb'>679:</span>		<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; <span class='separator'>(</span>array.length-<span class='number'>1</span><span class='separator'>)</span>; ++i<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>680:</span>		   <span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> j=<span class='number'>0</span>; j &lt; <span class='separator'>(</span>array.length-<span class='number'>1</span><span class='separator'>)</span>; ++j<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>681:</span>		      <span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>j<span class='separator'>]</span> &lt; array<span class='separator'>[</span>j+<span class='number'>1</span><span class='separator'>]</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>682:</span>		             temp = array<span class='separator'>[</span>j<span class='separator'>]</span>;
+<span class='lnNumb'>683:</span>		             array<span class='separator'>[</span>j<span class='separator'>]</span> = array<span class='separator'>[</span>j+<span class='number'>1</span><span class='separator'>]</span>;
+<span class='lnNumb'>684:</span>		             array<span class='separator'>[</span>j+<span class='number'>1</span><span class='separator'>]</span> = temp;
+<span class='lnNumb'>685:</span>		          <span class='separator'>}</span>
+<span class='lnNumb'>686:</span>		      <span class='separator'>}</span>
+<span class='lnNumb'>687:</span>		    <span class='separator'>}</span>
+<span class='lnNumb'>688:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>689:</span>	
+<span class='lnNumb'>690:</span>	<span class='lnComm'>// sort lowest to highest</span>
+<span class='lnNumb'>691:</span><span class='blComm'>/*		public static void sortHits(int[] array){ 
+<span class='lnNumb'>692:</span>			int temp = 0;
+<span class='lnNumb'>693:</span>			for(int i = 0; i &lt; (array.length-1); ++i){
+<span class='lnNumb'>694:</span>			   for(int j=0; j &lt; (array.length-1); ++j){
+<span class='lnNumb'>695:</span>			      if(array[j] &gt; array[j+1]){
+<span class='lnNumb'>696:</span>			             temp = array[j];
+<span class='lnNumb'>697:</span>			             array[j] = array[j+1];
+<span class='lnNumb'>698:</span>			             array[j+1] = temp;
+<span class='lnNumb'>699:</span>			          }
+<span class='lnNumb'>700:</span>			      }
+<span class='lnNumb'>701:</span>			    }
+<span class='lnNumb'>702:</span>			}*/</span>
+<span class='lnNumb'>703:</span>	
+<span class='lnNumb'>704:</span>	
+<span class='lnNumb'>705:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> isVertical<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>706:</span>		<span class='keyword'>boolean</span> vertical = <span class='literal'>false</span>;
+<span class='lnNumb'>707:</span>			<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span><span class='number'>0</span><span class='separator'>]</span> % <span class='number'>10</span> == array<span class='separator'>[</span><span class='number'>1</span><span class='separator'>]</span> % <span class='number'>10</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>708:</span>				vertical = <span class='literal'>true</span>;
+<span class='lnNumb'>709:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>710:</span>			
+<span class='lnNumb'>711:</span>		<span class='keyword'>return</span> vertical;
+<span class='lnNumb'>712:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>713:</span>	
+<span class='lnNumb'>714:</span>	<span class='lnComm'>// get lastIndex by counting the number of values in hits that are not -1<span class='number'></span></span>
+<span class='lnNumb'>715:</span>	<span class='lnComm'>// lastIndex(hits);</span>
+<span class='lnNumb'>716:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>int</span> lastIndex<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>717:</span>		
+<span class='lnNumb'>718:</span>		<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>719:</span>		<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>720:</span>			<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span> != -<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>721:</span>				count++;
+<span class='lnNumb'>722:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>723:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>724:</span>		<span class='keyword'>return</span> count - <span class='number'>1</span>;
+<span class='lnNumb'>725:</span>		
+<span class='lnNumb'>726:</span>		
+<span class='lnNumb'>727:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>728:</span>	
+<span class='lnNumb'>729:</span>	
+<span class='lnNumb'>730:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> printArr<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>731:</span>		<span class='keyword'>for</span> <span class='separator'>(</span>String x : array<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>732:</span>			System.out.print<span class='separator'>(</span>x + <span class='string'>", "</span><span class='separator'>)</span>;
+<span class='lnNumb'>733:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>734:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>735:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> printNumArr<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>736:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> x : array<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>737:</span>			System.out.print<span class='separator'>(</span>x + <span class='string'>", "</span><span class='separator'>)</span>;
+<span class='lnNumb'>738:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>739:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>740:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> printIntArr<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span><span class='separator'>[</span><span class='separator'>]</span> array<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>741:</span>		System.out.println<span class='separator'>(</span><span class='string'>"-------------"</span><span class='separator'>)</span>;
+<span class='lnNumb'>742:</span>		<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> j = <span class='number'>0</span>; j &lt; array.length; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>743:</span>			<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array<span class='separator'>[</span>j<span class='separator'>]</span>.length; i++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>744:</span>				System.out.printf<span class='separator'>(</span><span class='string'>"%-1s %-2d"</span>, <span class='string'>"|"</span>, array<span class='separator'>[</span>j<span class='separator'>]</span><span class='separator'>[</span>i<span class='separator'>]</span><span class='separator'>)</span>;
+<span class='lnNumb'>745:</span>				
+<span class='lnNumb'>746:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>747:</span>			System.out.println<span class='separator'>(</span><span class='string'>"|\n-------------"</span><span class='separator'>)</span>;
+<span class='lnNumb'>748:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>749:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>750:</span>	
+<span class='lnNumb'>751:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> isSingle<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> array, <span class='keyword'>int</span> value<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>752:</span>		<span class='keyword'>boolean</span> single = <span class='literal'>false</span>;
+<span class='lnNumb'>753:</span>		<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>754:</span>		<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>755:</span>			<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span> != value<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>756:</span>				count++;
+<span class='lnNumb'>757:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>758:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>759:</span>		<span class='keyword'>if</span><span class='separator'>(</span>count == <span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>760:</span>			single = <span class='literal'>true</span>;
+<span class='lnNumb'>761:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>762:</span>		
+<span class='lnNumb'>763:</span>		<span class='keyword'>return</span> single;
+<span class='lnNumb'>764:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>765:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>boolean</span> isEmpty<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> array, <span class='keyword'>int</span> value<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>766:</span>		<span class='keyword'>boolean</span> empty = <span class='literal'>false</span>;
+<span class='lnNumb'>767:</span>		<span class='keyword'>int</span> count = <span class='number'>0</span>;
+<span class='lnNumb'>768:</span>		<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; array.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>769:</span>			<span class='keyword'>if</span><span class='separator'>(</span>array<span class='separator'>[</span>i<span class='separator'>]</span> != value<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>770:</span>				count++;
+<span class='lnNumb'>771:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>772:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>773:</span>		<span class='keyword'>if</span><span class='separator'>(</span>count == <span class='number'>0</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>774:</span>			empty = <span class='literal'>true</span>;
+<span class='lnNumb'>775:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>776:</span>		
+<span class='lnNumb'>777:</span>		<span class='keyword'>return</span> empty;
+<span class='lnNumb'>778:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>779:</span><span class='separator'>}</span></pre> </body></html>

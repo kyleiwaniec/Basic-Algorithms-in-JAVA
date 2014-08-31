@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>public</span> <span class='keyword'>class</span> PseudoOneTimePad <span class='keyword'>implements</span> Encryptable, Decryptable <span class='separator'>{</span>
+<span class='lnNumb'>2:</span>	
+<span class='lnNumb'>3:</span>   <span class='keyword'>private</span> <span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> keystream;
+<span class='lnNumb'>4:</span>   
+<span class='lnNumb'>5:</span>   <span class='keyword'>public</span> PseudoOneTimePad<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>6:</span>      <span class='keyword'>this</span><span class='separator'>(</span><span class='literal'>null</span><span class='separator'>)</span>; 
+<span class='lnNumb'>7:</span>   <span class='separator'>}</span>
+<span class='lnNumb'>8:</span>   
+<span class='lnNumb'>9:</span>   <span class='keyword'>public</span> PseudoOneTimePad<span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> keystream<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>10:</span>      <span class='keyword'>this</span>.keystream = keystream;
+<span class='lnNumb'>11:</span>   <span class='separator'>}</span>
+<span class='lnNumb'>12:</span>   
+<span class='lnNumb'>13:</span>   
+<span class='lnNumb'>14:</span>   
+<span class='lnNumb'>15:</span>   <span class='keyword'>public</span> String encrypt<span class='separator'>(</span>String s<span class='separator'>)</span><span class='separator'>{</span> 
+<span class='lnNumb'>16:</span>      <span class='keyword'>char</span><span class='separator'>[</span><span class='separator'>]</span> letters = s.toCharArray<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>17:</span>      
+<span class='lnNumb'>18:</span>      
+<span class='lnNumb'>19:</span>      <span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; letters.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>20:</span>         
+<span class='lnNumb'>21:</span>    	  letters<span class='separator'>[</span>i<span class='separator'>]</span> = <span class='separator'>(</span><span class='keyword'>char</span><span class='separator'>)</span> <span class='separator'>(</span><span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>)</span>letters<span class='separator'>[</span>i<span class='separator'>]</span> + keystream<span class='separator'>[</span>i<span class='separator'>]</span> - <span class='number'>65</span><span class='separator'>)</span>; <span class='lnComm'>// the 65 is not necessary but makes for a prettier string</span>
+<span class='lnNumb'>22:</span>      <span class='separator'>}</span>
+<span class='lnNumb'>23:</span>      
+<span class='lnNumb'>24:</span>      String encrypted = <span class='keyword'>new</span> String<span class='separator'>(</span>letters<span class='separator'>)</span>;
+<span class='lnNumb'>25:</span>      <span class='keyword'>return</span> encrypted;
+<span class='lnNumb'>26:</span>   <span class='separator'>}</span>
+<span class='lnNumb'>27:</span>   
+<span class='lnNumb'>28:</span>   <span class='keyword'>public</span> String decrypt<span class='separator'>(</span>String s<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>29:</span>      <span class='keyword'>char</span><span class='separator'>[</span><span class='separator'>]</span> encryptedLetters = s.toCharArray<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>30:</span>      
+<span class='lnNumb'>31:</span>      <span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; encryptedLetters.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>32:</span>    	  encryptedLetters<span class='separator'>[</span>i<span class='separator'>]</span> = <span class='separator'>(</span><span class='keyword'>char</span><span class='separator'>)</span> <span class='separator'>(</span>encryptedLetters<span class='separator'>[</span>i<span class='separator'>]</span> - keystream<span class='separator'>[</span>i<span class='separator'>]</span> + <span class='number'>65</span><span class='separator'>)</span>;
+<span class='lnNumb'>33:</span>    	  
+<span class='lnNumb'>34:</span>      <span class='separator'>}</span>
+<span class='lnNumb'>35:</span>      
+<span class='lnNumb'>36:</span>      String decrypted = <span class='keyword'>new</span> String<span class='separator'>(</span>encryptedLetters<span class='separator'>)</span>;
+<span class='lnNumb'>37:</span>      <span class='keyword'>return</span> decrypted;
+<span class='lnNumb'>38:</span>   <span class='separator'>}</span>
+<span class='lnNumb'>39:</span><span class='separator'>}</span></pre> </body></html>

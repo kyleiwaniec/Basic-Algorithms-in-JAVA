@@ -1,0 +1,511 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.util.Scanner;
+<span class='lnNumb'>2:</span><span class='keyword'>import</span> java.util.regex.*;
+<span class='lnNumb'>3:</span><span class='keyword'>import</span> java.util.ArrayList;
+<span class='lnNumb'>4:</span><span class='keyword'>import</span> java.io.*;
+<span class='lnNumb'>5:</span><span class='keyword'>public</span> <span class='keyword'>class</span> ParserMachine <span class='separator'>{</span>
+<span class='lnNumb'>6:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> args<span class='separator'>)</span> <span class='keyword'>throws</span> Exception <span class='separator'>{</span>
+<span class='lnNumb'>7:</span>		String<span class='separator'>[</span><span class='separator'>]</span> keywords = <span class='separator'>{</span> <span class='string'>"abstract"</span>, <span class='string'>"continue"</span>, <span class='string'>"for"</span>, <span class='string'>"new"</span>, <span class='string'>"switch"</span>,
+<span class='lnNumb'>8:</span>				<span class='string'>"assert"</span>, <span class='string'>"default"</span>, <span class='string'>"goto"</span>, <span class='string'>"package"</span>, <span class='string'>"synchronized"</span>,
+<span class='lnNumb'>9:</span>				<span class='string'>"boolean"</span>, <span class='string'>"if"</span>, <span class='string'>"private"</span>, <span class='string'>"this"</span>, <span class='string'>"break"</span>, <span class='string'>"double"</span>, <span class='string'>"do"</span>,
+<span class='lnNumb'>10:</span>				<span class='string'>"implements"</span>, <span class='string'>"protected"</span>, <span class='string'>"throws"</span>, <span class='string'>"throw"</span>, <span class='string'>"byte"</span>, <span class='string'>"else"</span>,
+<span class='lnNumb'>11:</span>				<span class='string'>"import"</span>, <span class='string'>"public"</span>, <span class='string'>"case"</span>, <span class='string'>"enum"</span>, <span class='string'>"instanceof"</span>, <span class='string'>"return"</span>,
+<span class='lnNumb'>12:</span>				<span class='string'>"transient"</span>, <span class='string'>"catch"</span>, <span class='string'>"extends"</span>, <span class='string'>"int"</span>, <span class='string'>"short"</span>, <span class='string'>"try"</span>, <span class='string'>"char"</span>,
+<span class='lnNumb'>13:</span>				<span class='string'>"final"</span>, <span class='string'>"interface"</span>, <span class='string'>"static"</span>, <span class='string'>"void"</span>, <span class='string'>"class"</span>, <span class='string'>"finally"</span>,
+<span class='lnNumb'>14:</span>				<span class='string'>"long"</span>, <span class='string'>"strictfp"</span>, <span class='string'>"volatile"</span>, <span class='string'>"const"</span>, <span class='string'>"float"</span>, <span class='string'>"native"</span>,
+<span class='lnNumb'>15:</span>				<span class='string'>"super"</span>, <span class='string'>"while"</span><span class='separator'>}</span>;
+<span class='lnNumb'>16:</span>		String<span class='separator'>[</span><span class='separator'>]</span> literals = <span class='separator'>{</span><span class='string'>"true"</span>, <span class='string'>"false"</span>, <span class='string'>"null"</span><span class='separator'>}</span>;
+<span class='lnNumb'>17:</span>		String<span class='separator'>[</span><span class='separator'>]</span> separators = <span class='separator'>{</span><span class='string'>"("</span>, <span class='string'>")"</span>, <span class='string'>"{"</span>, <span class='string'>"}"</span>, <span class='string'>"["</span>, <span class='string'>"]"</span><span class='separator'>}</span>;
+<span class='lnNumb'>18:</span>		Scanner request = <span class='literal'>null</span>;
+<span class='lnNumb'>19:</span>		String filename = <span class='string'>""</span>;
+<span class='lnNumb'>20:</span>		String content = <span class='string'>""</span>;
+<span class='lnNumb'>21:</span>		Scanner scanner = <span class='literal'>null</span>;
+<span class='lnNumb'>22:</span>		<span class='keyword'>boolean</span> promptForFile = <span class='literal'>true</span>;
+<span class='lnNumb'>23:</span>		<span class='keyword'>boolean</span> blockComm = <span class='literal'>false</span>;
+<span class='lnNumb'>24:</span>		<span class='keyword'>boolean</span> lineComm = <span class='literal'>false</span>;
+<span class='lnNumb'>25:</span>		<span class='keyword'>boolean</span> quote = <span class='literal'>false</span>;
+<span class='lnNumb'>26:</span>		<span class='keyword'>boolean</span> character = <span class='literal'>false</span>;
+<span class='lnNumb'>27:</span>		<span class='keyword'>boolean</span> keyword = <span class='literal'>false</span>;
+<span class='lnNumb'>28:</span>		<span class='keyword'>int</span> lineNum = <span class='number'>1</span>;
+<span class='lnNumb'>29:</span>		<span class='keyword'>int</span> index = <span class='number'>0</span>;
+<span class='lnNumb'>30:</span>		<span class='keyword'>final</span> String lnBr = System.getProperty <span class='separator'>(</span> <span class='string'>"line.separator"</span> <span class='separator'>)</span>;
+<span class='lnNumb'>31:</span>		<span class='keyword'>int</span> ls = <span class='number'>0</span>; <span class='lnComm'>// literals state</span>
+<span class='lnNumb'>32:</span>		String tempLS = <span class='string'>""</span>; <span class='lnComm'>// temporary literals string</span>
+<span class='lnNumb'>33:</span>		<span class='keyword'>int</span> ks = <span class='number'>0</span>; <span class='lnComm'>// keyword state</span>
+<span class='lnNumb'>34:</span>		String tempKS = <span class='string'>""</span>; <span class='lnComm'>// temporary keyword string</span>
+<span class='lnNumb'>35:</span>		<span class='keyword'>int</span> ns = <span class='number'>0</span>; <span class='lnComm'>// number state</span>
+<span class='lnNumb'>36:</span>		String tempNums = <span class='string'>""</span>; <span class='lnComm'>// temporary numbers string</span>
+<span class='lnNumb'>37:</span>		<span class='keyword'>int</span> as = <span class='number'>0</span>; <span class='lnComm'>// annotation state</span>
+<span class='lnNumb'>38:</span>		String tempAnnot = <span class='string'>""</span>; <span class='lnComm'>// temporary annotation string</span>
+<span class='lnNumb'>39:</span>		
+<span class='lnNumb'>40:</span>		<span class='keyword'>int</span> bs = <span class='number'>0</span>; <span class='lnComm'>// block comment state</span>
+<span class='lnNumb'>41:</span>		
+<span class='lnNumb'>42:</span>		<span class='keyword'>while</span><span class='separator'>(</span>promptForFile == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>43:</span>			System.out.println<span class='separator'>(</span><span class='string'>"Enter path and file name (without the java extention):\n"</span> +
+<span class='lnNumb'>44:</span>					<span class='string'>"(for example: myComputer/myStuff/myFile)"</span><span class='separator'>)</span>;
+<span class='lnNumb'>45:</span>			request = <span class='keyword'>new</span> Scanner<span class='separator'>(</span>System.in<span class='separator'>)</span>;
+<span class='lnNumb'>46:</span>			filename = request.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>47:</span>			File file = <span class='keyword'>new</span> File<span class='separator'>(</span>filename+<span class='string'>".java"</span><span class='separator'>)</span>;
+<span class='lnNumb'>48:</span>			<span class='keyword'>try</span> <span class='separator'>{</span>
+<span class='lnNumb'>49:</span>				scanner = <span class='keyword'>new</span> Scanner<span class='separator'>(</span>file<span class='separator'>)</span>;
+<span class='lnNumb'>50:</span>				<span class='lnComm'>//scanner = new Scanner(new FileReader(filename+".java")); // not sure what the difference is.</span>
+<span class='lnNumb'>51:</span>				<span class='keyword'>while</span> <span class='separator'>(</span> scanner.hasNextLine<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>52:</span>					index = <span class='number'>0</span>;
+<span class='lnNumb'>53:</span>					String origLine = scanner.nextLine<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>54:</span>					Scanner scannerLine = <span class='keyword'>new</span> Scanner<span class='separator'>(</span>origLine<span class='separator'>)</span>;
+<span class='lnNumb'>55:</span>					outer:
+<span class='lnNumb'>56:</span>						<span class='keyword'>while</span><span class='separator'>(</span>scannerLine.hasNextLine<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>57:</span>							<span class='lnComm'>// Read line by line</span>
+<span class='lnNumb'>58:</span>							String line = scannerLine.nextLine<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>59:</span>							<span class='lnComm'>// first convert all the brackets to html</span>
+<span class='lnNumb'>60:</span>							String gt = <span class='string'>"([&gt;])"</span>;
+<span class='lnNumb'>61:</span>							line = Pattern.compile<span class='separator'>(</span>gt<span class='separator'>)</span>.matcher<span class='separator'>(</span>line<span class='separator'>)</span>
+<span class='lnNumb'>62:</span>									.replaceAll<span class='separator'>(</span><span class='string'>"&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>63:</span>							String lt = <span class='string'>"([&lt;])"</span>;
+<span class='lnNumb'>64:</span>							line = Pattern.compile<span class='separator'>(</span>lt<span class='separator'>)</span>.matcher<span class='separator'>(</span>line<span class='separator'>)</span>
+<span class='lnNumb'>65:</span>									.replaceAll<span class='separator'>(</span><span class='string'>"&lt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>66:</span>							<span class='lnComm'>// reset the ArrayList on every line</span>
+<span class='lnNumb'>67:</span>							ArrayList&lt;String&gt; characters = <span class='keyword'>new</span> ArrayList&lt;String&gt;<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>68:</span>							<span class='lnComm'>// In case weird shit happens, don't let it propagate to rest of file:</span>
+<span class='lnNumb'>69:</span>							<span class='keyword'>if</span><span class='separator'>(</span>quote == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span> 
+<span class='lnNumb'>70:</span>								quote = <span class='literal'>false</span>;
+<span class='lnNumb'>71:</span>								characters.add<span class='separator'>(</span><span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>72:</span>								index++;
+<span class='lnNumb'>73:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>74:</span>							<span class='keyword'>if</span><span class='separator'>(</span>lineComm == <span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span> 
+<span class='lnNumb'>75:</span>								lineComm = <span class='literal'>false</span>;
+<span class='lnNumb'>76:</span>								characters.add<span class='separator'>(</span><span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>77:</span>								index++;
+<span class='lnNumb'>78:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>79:</span>							<span class='lnComm'>// end weird shit reset - for now...</span>
+<span class='lnNumb'>80:</span>							tempKS = <span class='string'>""</span>;
+<span class='lnNumb'>81:</span>							tempLS = <span class='string'>""</span>;
+<span class='lnNumb'>82:</span>							<span class='lnComm'>// read character by character:</span>
+<span class='lnNumb'>83:</span>							inner:
+<span class='lnNumb'>84:</span>								<span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; line.length<span class='separator'>(</span><span class='separator'>)</span>; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>85:</span>									<span class='lnComm'>// Copy the input character by character into the ArrayList</span>
+<span class='lnNumb'>86:</span>									characters.add<span class='separator'>(</span>i + index, Character.toString<span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>87:</span>									<span class='lnComm'>// char:</span>
+<span class='lnNumb'>88:</span>									<span class='keyword'>if</span><span class='separator'>(</span>
+<span class='lnNumb'>89:</span>											<span class='separator'>(</span>i &gt; <span class='number'>0</span> 
+<span class='lnNumb'>90:</span>													&& character == <span class='literal'>false</span> 
+<span class='lnNumb'>91:</span>													&& quote == <span class='literal'>false</span> 
+<span class='lnNumb'>92:</span>													&& lineComm == <span class='literal'>false</span> 
+<span class='lnNumb'>93:</span>													&& blockComm == <span class='literal'>false</span>  
+<span class='lnNumb'>94:</span>													&&  line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\''</span> 
+<span class='lnNumb'>95:</span>													&& line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> != <span class='char'>'\\'</span><span class='separator'>)</span>
+<span class='lnNumb'>96:</span>													||	<span class='separator'>(</span>i == <span class='number'>0</span> 
+<span class='lnNumb'>97:</span>													&& character == <span class='literal'>false</span> 
+<span class='lnNumb'>98:</span>													&& quote == <span class='literal'>false</span> 
+<span class='lnNumb'>99:</span>													&& lineComm == <span class='literal'>false</span> 
+<span class='lnNumb'>100:</span>													&& blockComm == <span class='literal'>false</span>  
+<span class='lnNumb'>101:</span>													&&  line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\''</span><span class='separator'>)</span>
+<span class='lnNumb'>102:</span>											<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>103:</span>										characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='char'&gt;"</span><span class='separator'>)</span>; <span class='lnComm'>// insert the tag before the single quote</span>
+<span class='lnNumb'>104:</span>										index++;
+<span class='lnNumb'>105:</span>										character = <span class='literal'>true</span>;
+<span class='lnNumb'>106:</span>									<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>i &gt; <span class='number'>0</span> 
+<span class='lnNumb'>107:</span>											&& character == <span class='literal'>true</span>  
+<span class='lnNumb'>108:</span>											&& line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\''</span> 
+<span class='lnNumb'>109:</span>											&& <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> != <span class='char'>'\\'</span> 
+<span class='lnNumb'>110:</span>											|| <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'\\'</span> && line.charAt<span class='separator'>(</span>i-<span class='number'>2</span><span class='separator'>)</span> == <span class='char'>'\\'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>111:</span>										
+<span class='lnNumb'>112:</span>										ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+<span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>113:</span>										characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>; <span class='lnComm'>// insert the tag after the single quote</span>
+<span class='lnNumb'>114:</span>										index++;
+<span class='lnNumb'>115:</span>										character = <span class='literal'>false</span>;
+<span class='lnNumb'>116:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>117:</span>									<span class='lnComm'>// line comment:</span>
+<span class='lnNumb'>118:</span>									<span class='keyword'>if</span><span class='separator'>(</span>i &lt; line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span> 
+<span class='lnNumb'>119:</span>											&& line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>120:</span>											&& line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>121:</span>											&& quote == <span class='literal'>false</span> 
+<span class='lnNumb'>122:</span>											&& blockComm == <span class='literal'>false</span> 
+<span class='lnNumb'>123:</span>											&& lineComm == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>124:</span>										characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='lnComm'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>125:</span>										index++;
+<span class='lnNumb'>126:</span>										lineComm = <span class='literal'>true</span>;
+<span class='lnNumb'>127:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>128:</span>									<span class='keyword'>if</span><span class='separator'>(</span>lineComm == <span class='literal'>true</span> && i == line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>129:</span>										ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+<span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>130:</span>										characters.add<span class='separator'>(</span>line.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>1</span>+index, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>131:</span>										index++;
+<span class='lnNumb'>132:</span>										lineComm = <span class='literal'>false</span>;
+<span class='lnNumb'>133:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>134:</span>									<span class='lnComm'>// block comments:</span>
+<span class='lnNumb'>135:</span>									<span class='keyword'>if</span><span class='separator'>(</span>i &lt; line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span> 
+<span class='lnNumb'>136:</span>											&& line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>137:</span>											&& line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'*'</span> 
+<span class='lnNumb'>138:</span>											&& lineComm == <span class='literal'>false</span> 
+<span class='lnNumb'>139:</span>											&& blockComm == <span class='literal'>false</span> 
+<span class='lnNumb'>140:</span>											&& quote == <span class='literal'>false</span> <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>141:</span>										characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='blComm'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>142:</span>										index++;
+<span class='lnNumb'>143:</span>										blockComm = <span class='literal'>true</span>;
+<span class='lnNumb'>144:</span>									<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>i &gt; <span class='number'>1</span> 
+<span class='lnNumb'>145:</span>											&& line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'*'</span> 
+<span class='lnNumb'>146:</span>											&& line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>147:</span>											&& line.charAt<span class='separator'>(</span>i-<span class='number'>2</span><span class='separator'>)</span> != <span class='char'>'/'</span> 
+<span class='lnNumb'>148:</span>											&& blockComm == <span class='literal'>true</span> <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>149:</span>										characters.add<span class='separator'>(</span>i+<span class='number'>1</span>+index, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>150:</span>										index++;
+<span class='lnNumb'>151:</span>										blockComm = <span class='literal'>false</span>;
+<span class='lnNumb'>152:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>153:</span>									<span class='lnComm'>// quoted strings:</span>
+<span class='lnNumb'>154:</span>									<span class='keyword'>if</span><span class='separator'>(</span>quote == <span class='literal'>false</span> 
+<span class='lnNumb'>155:</span>											&& lineComm == <span class='literal'>false</span> 
+<span class='lnNumb'>156:</span>											&& blockComm == <span class='literal'>false</span> 
+<span class='lnNumb'>157:</span>											&& character == <span class='literal'>false</span> 
+<span class='lnNumb'>158:</span>											&&  line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'"'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>159:</span>										characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='string'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>160:</span>										index++;
+<span class='lnNumb'>161:</span>										quote = <span class='literal'>true</span>;
+<span class='lnNumb'>162:</span>									<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>quote == <span class='literal'>true</span>  
+<span class='lnNumb'>163:</span>											&& line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'"'</span> 
+<span class='lnNumb'>164:</span>											&& line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> != <span class='char'>'\\'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>165:</span>										ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+<span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>166:</span>										characters.add<span class='separator'>(</span>i+<span class='number'>1</span>+index, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>167:</span>										index++;
+<span class='lnNumb'>168:</span>										quote = <span class='literal'>false</span>;
+<span class='lnNumb'>169:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>170:</span>									<span class='lnComm'>// keywords </span>
+<span class='lnNumb'>171:</span>									<span class='keyword'>if</span><span class='separator'>(</span>	quote == <span class='literal'>false</span> 
+<span class='lnNumb'>172:</span>											&& lineComm == <span class='literal'>false</span> 
+<span class='lnNumb'>173:</span>											&& blockComm == <span class='literal'>false</span> 
+<span class='lnNumb'>174:</span>											&& character == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>175:</span>										<span class='keyword'>if</span><span class='separator'>(</span>i == <span class='number'>0</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>176:</span>											ks = <span class='number'>1</span>;
+<span class='lnNumb'>177:</span>										<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>ks == <span class='number'>0</span> <span class='lnComm'>// characters before the keyword:</span>
+<span class='lnNumb'>178:</span>												&& <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>179:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>180:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'('</span> 
+<span class='lnNumb'>181:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>')'</span> 
+<span class='lnNumb'>182:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'{'</span>
+<span class='lnNumb'>183:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'}'</span>
+<span class='lnNumb'>184:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'['</span>
+<span class='lnNumb'>185:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>']'</span>
+<span class='lnNumb'>186:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>187:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'.'</span>
+<span class='lnNumb'>188:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>','</span>
+<span class='lnNumb'>189:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>';'</span><span class='separator'>)</span><span class='separator'>)</span>
+<span class='lnNumb'>190:</span>										<span class='separator'>{</span>
+<span class='lnNumb'>191:</span>											ks = <span class='number'>2</span>;	
+<span class='lnNumb'>192:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>193:</span>										<span class='keyword'>if</span><span class='separator'>(</span>ks == <span class='number'>1</span> || ks == <span class='number'>2</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>194:</span>											tempKS += line.charAt<span class='separator'>(</span>i<span class='separator'>)</span>;
+<span class='lnNumb'>195:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>196:</span>										
+<span class='lnNumb'>197:</span>										<span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span><span class='lnComm'>// characters after the keyword:</span>
+<span class='lnNumb'>198:</span>												line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>199:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>200:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\r'</span> 
+<span class='lnNumb'>201:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\n'</span> 
+<span class='lnNumb'>202:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'('</span> 
+<span class='lnNumb'>203:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>')'</span> 
+<span class='lnNumb'>204:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'{'</span>
+<span class='lnNumb'>205:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'}'</span>
+<span class='lnNumb'>206:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'['</span>
+<span class='lnNumb'>207:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>']'</span>
+<span class='lnNumb'>208:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span>
+<span class='lnNumb'>209:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>','</span>
+<span class='lnNumb'>210:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'.'</span>
+<span class='lnNumb'>211:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>';'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>212:</span>											tempKS = <span class='string'>""</span>;
+<span class='lnNumb'>213:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>214:</span>										<span class='keyword'>if</span><span class='separator'>(</span>i &lt; line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>215:</span>											<span class='keyword'>for</span><span class='separator'>(</span>String key : keywords<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>216:</span>												<span class='keyword'>if</span><span class='separator'>(</span>tempKS.equals<span class='separator'>(</span>key<span class='separator'>)</span> && 
+<span class='lnNumb'>217:</span>														<span class='separator'>(</span>  line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>218:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>219:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>220:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'('</span>
+<span class='lnNumb'>221:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>')'</span> 
+<span class='lnNumb'>222:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'{'</span>
+<span class='lnNumb'>223:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'}'</span> 
+<span class='lnNumb'>224:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'['</span>
+<span class='lnNumb'>225:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>']'</span> 
+<span class='lnNumb'>226:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'.'</span> 
+<span class='lnNumb'>227:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>','</span>
+<span class='lnNumb'>228:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>';'</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span> 
+<span class='lnNumb'>229:</span>													ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempKS.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>2</span><span class='separator'>)</span>;
+<span class='lnNumb'>230:</span>													characters.add<span class='separator'>(</span>i+index-tempKS.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>1</span>, <span class='string'>"&lt;span class='keyword'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>231:</span>													index++;
+<span class='lnNumb'>232:</span>													characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>233:</span>													index++;
+<span class='lnNumb'>234:</span>													tempKS = <span class='string'>""</span>;
+<span class='lnNumb'>235:</span>													ks = <span class='number'>0</span>;
+<span class='lnNumb'>236:</span>												<span class='separator'>}</span>
+<span class='lnNumb'>237:</span>											<span class='separator'>}</span>
+<span class='lnNumb'>238:</span>										<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>i == line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// end of line</span>
+<span class='lnNumb'>239:</span>											<span class='keyword'>for</span><span class='separator'>(</span>String key : keywords<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>240:</span>												<span class='keyword'>if</span><span class='separator'>(</span>tempKS.equals<span class='separator'>(</span>key<span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>241:</span>													ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempKS.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>2</span><span class='separator'>)</span>;
+<span class='lnNumb'>242:</span>													characters.add<span class='separator'>(</span>i+index-tempKS.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>1</span>, <span class='string'>"&lt;span class='keyword'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>243:</span>													index++;
+<span class='lnNumb'>244:</span>													characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>245:</span>													index++;
+<span class='lnNumb'>246:</span>													tempKS = <span class='string'>""</span>;
+<span class='lnNumb'>247:</span>													ks = <span class='number'>0</span>;
+<span class='lnNumb'>248:</span>												<span class='separator'>}</span>
+<span class='lnNumb'>249:</span>											<span class='separator'>}</span>
+<span class='lnNumb'>250:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>251:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>252:</span>									<span class='lnComm'>// literals </span>
+<span class='lnNumb'>253:</span>									<span class='keyword'>if</span><span class='separator'>(</span>	quote == <span class='literal'>false</span> && lineComm == <span class='literal'>false</span> && blockComm == <span class='literal'>false</span> && character == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>254:</span>										<span class='keyword'>if</span><span class='separator'>(</span>i == <span class='number'>0</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>255:</span>											ls = <span class='number'>1</span>;
+<span class='lnNumb'>256:</span>										<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>ls == <span class='number'>0</span> && 
+<span class='lnNumb'>257:</span>												<span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>258:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>259:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'('</span> 
+<span class='lnNumb'>260:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>')'</span> 
+<span class='lnNumb'>261:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span><span class='separator'>)</span><span class='separator'>)</span>
+<span class='lnNumb'>262:</span>										<span class='separator'>{</span>
+<span class='lnNumb'>263:</span>											ls = <span class='number'>2</span>;	
+<span class='lnNumb'>264:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>265:</span>										<span class='keyword'>if</span><span class='separator'>(</span>ls == <span class='number'>1</span> || ls == <span class='number'>2</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>266:</span>											tempLS += line.charAt<span class='separator'>(</span>i<span class='separator'>)</span>;
+<span class='lnNumb'>267:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>268:</span>										<span class='keyword'>if</span><span class='separator'>(</span><span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>269:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>270:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>271:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'('</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>272:</span>											tempLS = <span class='string'>""</span>;
+<span class='lnNumb'>273:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>274:</span>										<span class='keyword'>if</span><span class='separator'>(</span>i &lt; line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>275:</span>											<span class='keyword'>for</span><span class='separator'>(</span>String lit : literals<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>276:</span>												<span class='keyword'>if</span><span class='separator'>(</span>tempLS.equals<span class='separator'>(</span>lit<span class='separator'>)</span> && 
+<span class='lnNumb'>277:</span>														<span class='separator'>(</span>line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>278:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>279:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'/'</span> 
+<span class='lnNumb'>280:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'('</span> 
+<span class='lnNumb'>281:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>')'</span> 
+<span class='lnNumb'>282:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>';'</span> 
+<span class='lnNumb'>283:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'{'</span> 
+<span class='lnNumb'>284:</span>														|| line.charAt<span class='separator'>(</span>i+<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>','</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>285:</span>													ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempLS.length<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>286:</span>													characters.add<span class='separator'>(</span>i+index-tempLS.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>1</span>, <span class='string'>"&lt;span class='literal'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>287:</span>													index++;
+<span class='lnNumb'>288:</span>													characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>289:</span>													index++;
+<span class='lnNumb'>290:</span>													tempLS = <span class='string'>""</span>;
+<span class='lnNumb'>291:</span>													ls = <span class='number'>0</span>;
+<span class='lnNumb'>292:</span>												<span class='separator'>}</span>
+<span class='lnNumb'>293:</span>											<span class='separator'>}</span>
+<span class='lnNumb'>294:</span>										<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>i == line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>295:</span>											<span class='keyword'>for</span><span class='separator'>(</span>String lit : literals<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>296:</span>												<span class='keyword'>if</span><span class='separator'>(</span>tempLS.equals<span class='separator'>(</span>lit<span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>297:</span>													ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempLS.length<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>298:</span>													characters.add<span class='separator'>(</span>i+index-tempLS.length<span class='separator'>(</span><span class='separator'>)</span>+<span class='number'>1</span>, <span class='string'>"&lt;span class='literal'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>299:</span>													index++;
+<span class='lnNumb'>300:</span>													characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>301:</span>													index++;
+<span class='lnNumb'>302:</span>													tempLS = <span class='string'>""</span>;
+<span class='lnNumb'>303:</span>													ls = <span class='number'>0</span>;
+<span class='lnNumb'>304:</span>												<span class='separator'>}</span>
+<span class='lnNumb'>305:</span>											<span class='separator'>}</span>
+<span class='lnNumb'>306:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>307:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>308:</span>									<span class='lnComm'>// annotations</span>
+<span class='lnNumb'>309:</span>									<span class='keyword'>if</span><span class='separator'>(</span>as == <span class='number'>0</span> && quote == <span class='literal'>false</span> && character == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>310:</span>										<span class='keyword'>if</span><span class='separator'>(</span>i== <span class='number'>0</span> && line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'@'</span><span class='separator'>)</span>
+<span class='lnNumb'>311:</span>										<span class='separator'>{</span>
+<span class='lnNumb'>312:</span>											ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempAnnot.length<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>313:</span>											characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='annotation'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>314:</span>											index++;
+<span class='lnNumb'>315:</span>											as = <span class='number'>1</span>;
+<span class='lnNumb'>316:</span>										<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>i &gt; <span class='number'>0</span> && <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>' '</span> || line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'\t'</span><span class='separator'>)</span>
+<span class='lnNumb'>317:</span>												&& line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'@'</span><span class='separator'>)</span> 
+<span class='lnNumb'>318:</span>										<span class='separator'>{</span>
+<span class='lnNumb'>319:</span>											ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempAnnot.length<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>320:</span>											characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='annotation'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>321:</span>											index++;
+<span class='lnNumb'>322:</span>											as = <span class='number'>1</span>;
+<span class='lnNumb'>323:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>324:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>325:</span>									<span class='keyword'>if</span><span class='separator'>(</span>as == <span class='number'>1</span> 
+<span class='lnNumb'>326:</span>											&& <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>327:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>328:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\n'</span> 
+<span class='lnNumb'>329:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'('</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>330:</span>										characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>331:</span>										index++;
+<span class='lnNumb'>332:</span>										as = <span class='number'>0</span>;
+<span class='lnNumb'>333:</span>									<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>as == <span class='number'>1</span> && i == line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>334:</span>										characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>335:</span>										index++;
+<span class='lnNumb'>336:</span>										as = <span class='number'>0</span>;
+<span class='lnNumb'>337:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>338:</span>									<span class='lnComm'>// numbers</span>
+<span class='lnNumb'>339:</span>									<span class='keyword'>if</span><span class='separator'>(</span>ns == <span class='number'>0</span> && quote == <span class='literal'>false</span> && lineComm == <span class='literal'>false</span> && blockComm == <span class='literal'>false</span> && character == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>340:</span>										<span class='keyword'>if</span><span class='separator'>(</span>i== <span class='number'>0</span> && <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'0'</span> 
+<span class='lnNumb'>341:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'1'</span> 
+<span class='lnNumb'>342:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'2'</span> 
+<span class='lnNumb'>343:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'3'</span> 
+<span class='lnNumb'>344:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'4'</span> 
+<span class='lnNumb'>345:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'5'</span> 
+<span class='lnNumb'>346:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'6'</span> 
+<span class='lnNumb'>347:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'7'</span> 
+<span class='lnNumb'>348:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'8'</span>
+<span class='lnNumb'>349:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'9'</span> 
+<span class='lnNumb'>350:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\\'</span><span class='separator'>)</span> 
+<span class='lnNumb'>351:</span>												<span class='separator'>)</span>
+<span class='lnNumb'>352:</span>										<span class='separator'>{</span>
+<span class='lnNumb'>353:</span>											ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempNums.length<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>354:</span>											characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='number'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>355:</span>											index++;
+<span class='lnNumb'>356:</span>											ns = <span class='number'>1</span>;
+<span class='lnNumb'>357:</span>										<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>i &gt; <span class='number'>0</span> && <span class='separator'>(</span>
+<span class='lnNumb'>358:</span>												line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>359:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'+'</span> 
+<span class='lnNumb'>360:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'-'</span> 
+<span class='lnNumb'>361:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'('</span> 
+<span class='lnNumb'>362:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'.'</span>
+<span class='lnNumb'>363:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>','</span>
+<span class='lnNumb'>364:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'['</span> 
+<span class='lnNumb'>365:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'/'</span>
+<span class='lnNumb'>366:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'%'</span>
+<span class='lnNumb'>367:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'&lt;'</span>
+<span class='lnNumb'>368:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'&gt;'</span>
+<span class='lnNumb'>369:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'!'</span>
+<span class='lnNumb'>370:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'='</span>
+<span class='lnNumb'>371:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'^'</span>
+<span class='lnNumb'>372:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>':'</span>
+<span class='lnNumb'>373:</span>												|| line.charAt<span class='separator'>(</span>i-<span class='number'>1</span><span class='separator'>)</span> == <span class='char'>'~'</span><span class='separator'>)</span>
+<span class='lnNumb'>374:</span>												&& <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'0'</span> 
+<span class='lnNumb'>375:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'1'</span> 
+<span class='lnNumb'>376:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'2'</span> 
+<span class='lnNumb'>377:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'3'</span> 
+<span class='lnNumb'>378:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'4'</span> 
+<span class='lnNumb'>379:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'5'</span> 
+<span class='lnNumb'>380:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'6'</span> 
+<span class='lnNumb'>381:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'7'</span> 
+<span class='lnNumb'>382:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'8'</span>
+<span class='lnNumb'>383:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'9'</span> 
+<span class='lnNumb'>384:</span>												|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\\'</span><span class='separator'>)</span> 
+<span class='lnNumb'>385:</span>												<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>386:</span>											ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+tempNums.length<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>387:</span>											characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='number'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>388:</span>											index++;
+<span class='lnNumb'>389:</span>											ns = <span class='number'>1</span>;
+<span class='lnNumb'>390:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>391:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>392:</span>									<span class='keyword'>if</span><span class='separator'>(</span>ns == <span class='number'>1</span> && <span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>' '</span> 
+<span class='lnNumb'>393:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'\t'</span> 
+<span class='lnNumb'>394:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>';'</span> 
+<span class='lnNumb'>395:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'-'</span> 
+<span class='lnNumb'>396:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'+'</span> 
+<span class='lnNumb'>397:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>')'</span> 
+<span class='lnNumb'>398:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>','</span> 
+<span class='lnNumb'>399:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'.'</span> 
+<span class='lnNumb'>400:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>']'</span> 
+<span class='lnNumb'>401:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'*'</span>
+<span class='lnNumb'>402:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'%'</span>
+<span class='lnNumb'>403:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'/'</span>
+<span class='lnNumb'>404:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'&gt;'</span>
+<span class='lnNumb'>405:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'&lt;'</span>
+<span class='lnNumb'>406:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'!'</span>
+<span class='lnNumb'>407:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'='</span>
+<span class='lnNumb'>408:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>':'</span>
+<span class='lnNumb'>409:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'^'</span>
+<span class='lnNumb'>410:</span>											|| line.charAt<span class='separator'>(</span>i<span class='separator'>)</span> == <span class='char'>'~'</span><span class='separator'>)</span>
+<span class='lnNumb'>411:</span>											<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>412:</span>										characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>413:</span>										index++;
+<span class='lnNumb'>414:</span>										ns = <span class='number'>0</span>;
+<span class='lnNumb'>415:</span>									<span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>ns == <span class='number'>1</span> && i == line.length<span class='separator'>(</span><span class='separator'>)</span>-<span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>416:</span>										characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>417:</span>										index++;
+<span class='lnNumb'>418:</span>										ns = <span class='number'>0</span>;
+<span class='lnNumb'>419:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>420:</span>									<span class='lnComm'>// separators</span>
+<span class='lnNumb'>421:</span>									<span class='keyword'>if</span><span class='separator'>(</span>quote == <span class='literal'>false</span> && lineComm == <span class='literal'>false</span> && blockComm == <span class='literal'>false</span> && character == <span class='literal'>false</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>422:</span>										<span class='keyword'>for</span><span class='separator'>(</span>String sep : separators<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>423:</span>											<span class='keyword'>if</span><span class='separator'>(</span>Character.toString<span class='separator'>(</span>line.charAt<span class='separator'>(</span>i<span class='separator'>)</span><span class='separator'>)</span>.equals<span class='separator'>(</span>sep<span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>424:</span>												characters.add<span class='separator'>(</span>i+index, <span class='string'>"&lt;span class='separator'&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>425:</span>												index++;
+<span class='lnNumb'>426:</span>												ensureSize<span class='separator'>(</span>characters, line.length<span class='separator'>(</span><span class='separator'>)</span>+index+<span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>427:</span>												characters.add<span class='separator'>(</span>i+index+<span class='number'>1</span>, <span class='string'>"&lt;/span&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>428:</span>												index++;
+<span class='lnNumb'>429:</span>											<span class='separator'>}</span>
+<span class='lnNumb'>430:</span>										<span class='separator'>}</span>
+<span class='lnNumb'>431:</span>									<span class='separator'>}</span>
+<span class='lnNumb'>432:</span>								<span class='separator'>}</span> <span class='lnComm'>// end char by char loop</span>
+<span class='lnNumb'>433:</span>							content += <span class='string'>"\n"</span>;
+<span class='lnNumb'>434:</span>							<span class='lnComm'>// comment out the 2 lines below to disable line numbers:</span>
+<span class='lnNumb'>435:</span>							content += <span class='string'>"&lt;span class='lnNumb'&gt;"</span> + lineNum+<span class='string'>":&lt;/span&gt;"</span>;
+<span class='lnNumb'>436:</span>							lineNum++;
+<span class='lnNumb'>437:</span>							<span class='lnComm'>// Make one big content string out of the characters ArrayList:</span>
+<span class='lnNumb'>438:</span>							String str = characters.toString<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>439:</span>							String revStr = str.substring<span class='separator'>(</span><span class='number'>1</span>, str.length<span class='separator'>(</span><span class='separator'>)</span> - <span class='number'>1</span><span class='separator'>)</span>; <span class='lnComm'>// get rid of the square brackets</span>
+<span class='lnNumb'>440:</span>							String<span class='separator'>[</span><span class='separator'>]</span> temp;
+<span class='lnNumb'>441:</span>							temp = revStr.split<span class='separator'>(</span><span class='string'>", "</span><span class='separator'>)</span>;
+<span class='lnNumb'>442:</span>							<span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; temp.length ; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>443:</span>								content += temp<span class='separator'>[</span>i<span class='separator'>]</span>;
+<span class='lnNumb'>444:</span>							<span class='separator'>}</span>
+<span class='lnNumb'>445:</span>						<span class='separator'>}</span>
+<span class='lnNumb'>446:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>447:</span>				promptForFile = <span class='literal'>false</span>;
+<span class='lnNumb'>448:</span>			<span class='separator'>}</span><span class='keyword'>catch</span><span class='separator'>(</span>IOException ioe<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>449:</span>				System.out.println<span class='separator'>(</span><span class='string'>"An Exception has occured"</span><span class='separator'>)</span>;
+<span class='lnNumb'>450:</span>				System.out.println<span class='separator'>(</span>ioe.toString<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>451:</span>				<span class='lnComm'>//System.exit(1);</span>
+<span class='lnNumb'>452:</span>				<span class='keyword'>continue</span>;
+<span class='lnNumb'>453:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>454:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>455:</span>		PrintWriter writer = <span class='keyword'>new</span> PrintWriter<span class='separator'>(</span>filename+<span class='string'>".html"</span><span class='separator'>)</span>;
+<span class='lnNumb'>456:</span>		writer.println<span class='separator'>(</span><span class='string'>"&lt;!DOCTYPE HTML&gt;\n"</span>
+<span class='lnNumb'>457:</span>				+ <span class='string'>"&lt;html lang='en'&gt;\n"</span>
+<span class='lnNumb'>458:</span>				+ <span class='string'>"&lt;head&gt;\n"</span>
+<span class='lnNumb'>459:</span>				+ <span class='string'>"&lt;meta charset='UTF-8'&gt;\n"</span>
+<span class='lnNumb'>460:</span>				+ <span class='string'>"&lt;style&gt;\n"</span>
+<span class='lnNumb'>461:</span>				+ <span class='string'>"pre{color:#444;}\n"</span>
+<span class='lnNumb'>462:</span>				+ <span class='string'>".lnComm{color:#85bd7f;}\n"</span>
+<span class='lnNumb'>463:</span>				+ <span class='string'>".string{color:#015de6;}\n"</span>
+<span class='lnNumb'>464:</span>				+ <span class='string'>".char{color:purple;}\n"</span>
+<span class='lnNumb'>465:</span>				+ <span class='string'>".blComm{color:#7f9ed2;}\n"</span>
+<span class='lnNumb'>466:</span>				+ <span class='string'>".lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}\n"</span>
+<span class='lnNumb'>467:</span>				+ <span class='string'>".number{color:#fa4903;}\n"</span>
+<span class='lnNumb'>468:</span>				+ <span class='string'>".annotation{color:#9756aa;}\n"</span>
+<span class='lnNumb'>469:</span>				+ <span class='string'>".keyword{color:hotpink;font-weight:bold;}\n"</span>
+<span class='lnNumb'>470:</span>				+ <span class='string'>".literal{color:darkblue;font-weight:bold;}\n"</span>
+<span class='lnNumb'>471:</span>				+ <span class='string'>".separator{color:#b10148;font-weight:bold;}\n"</span>
+<span class='lnNumb'>472:</span>				+ <span class='string'>"&lt;/style&gt;\n"</span>
+<span class='lnNumb'>473:</span>				+ <span class='string'>"&lt;/head&gt;\n"</span> + <span class='string'>"&lt;body&gt;\n"</span> + <span class='string'>"&lt;pre&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>474:</span>		writer.print<span class='separator'>(</span>content<span class='separator'>)</span>;
+<span class='lnNumb'>475:</span>		writer.println<span class='separator'>(</span><span class='string'>"&lt;/pre&gt; "</span> + <span class='string'>"&lt;/body&gt;"</span> + <span class='string'>"&lt;/html&gt;"</span><span class='separator'>)</span>;
+<span class='lnNumb'>476:</span>		writer.flush<span class='separator'>(</span><span class='separator'>)</span>; <span class='lnComm'>// flush the output</span>
+<span class='lnNumb'>477:</span>		writer.close<span class='separator'>(</span><span class='separator'>)</span>; <span class='lnComm'>// close the file</span>
+<span class='lnNumb'>478:</span>		System.out.println<span class='separator'>(</span><span class='string'>"A "</span>+filename+<span class='string'>".html file was created in the same directory as your java file."</span><span class='separator'>)</span>;
+<span class='lnNumb'>479:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>480:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> String emptyString<span class='separator'>(</span>String s<span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// not being used</span>
+<span class='lnNumb'>481:</span>		s =<span class='string'>""</span>;
+<span class='lnNumb'>482:</span>		<span class='keyword'>return</span> s;
+<span class='lnNumb'>483:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>484:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> ensureSize<span class='separator'>(</span>ArrayList&lt;String&gt; list, <span class='keyword'>int</span> size<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>485:</span>		list.ensureCapacity<span class='separator'>(</span>size<span class='separator'>)</span>;
+<span class='lnNumb'>486:</span>		<span class='keyword'>while</span> <span class='separator'>(</span>list.size<span class='separator'>(</span><span class='separator'>)</span> &lt; size<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>487:</span>			list.add<span class='separator'>(</span><span class='string'>""</span><span class='separator'>)</span>;
+<span class='lnNumb'>488:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>489:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>490:</span><span class='separator'>}</span></pre> </body></html>

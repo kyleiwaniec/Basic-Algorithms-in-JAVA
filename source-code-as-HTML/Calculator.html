@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.io.BufferedReader;
+<span class='lnNumb'>2:</span><span class='keyword'>import</span> java.io.InputStream;
+<span class='lnNumb'>3:</span><span class='keyword'>import</span> java.io.InputStreamReader;
+<span class='lnNumb'>4:</span><span class='keyword'>import</span> java.io.ByteArrayInputStream;
+<span class='lnNumb'>5:</span><span class='keyword'>import</span> java.io.IOException;
+<span class='lnNumb'>6:</span><span class='keyword'>import</span> java.util.Stack;
+<span class='lnNumb'>7:</span><span class='keyword'>import</span> java.util.ArrayDeque;
+<span class='lnNumb'>8:</span><span class='keyword'>import</span> java.util.ArrayList;
+<span class='lnNumb'>9:</span><span class='keyword'>import</span> java.util.regex.Pattern;
+<span class='lnNumb'>10:</span><span class='keyword'>import</span> java.util.regex.Matcher;
+<span class='lnNumb'>11:</span><span class='keyword'>public</span> <span class='keyword'>class</span> Calculator<span class='separator'>{</span>
+<span class='lnNumb'>12:</span>    <span class='keyword'>private</span> Stack&lt;Character&gt; operatorStack;
+<span class='lnNumb'>13:</span>    <span class='keyword'>private</span> Stack&lt;Double&gt; operandStack;
+<span class='lnNumb'>14:</span>    <span class='keyword'>private</span> ArrayDeque&lt;String&gt; postfixDeque;
+<span class='lnNumb'>15:</span>    <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>final</span> String OPERATORS = <span class='string'>"()s^!/*+-"</span>;
+<span class='lnNumb'>16:</span>    <span class='blComm'>/** The precedence of the operators, matches order in OPERATORS. */</span>
+<span class='lnNumb'>17:</span>    <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>final</span> <span class='keyword'>int</span><span class='separator'>[</span><span class='separator'>]</span> PRECEDENCE = <span class='separator'>{</span>4,<span class='number'>4</span>,<span class='number'>4</span>,<span class='number'>3</span>,<span class='number'>3</span>,<span class='number'>2</span>,<span class='number'>2</span>,<span class='number'>1</span>,<span class='number'>1<span class='separator'>}</span></span>;
+<span class='lnNumb'>18:</span>    <span class='lnComm'>// public Calculator(){<span class='separator'></span></span>
+<span class='lnNumb'>19:</span>    
+<span class='lnNumb'>20:</span>    <span class='lnComm'>// }<span class='separator'></span></span>
+<span class='lnNumb'>21:</span>    
+<span class='lnNumb'>22:</span>    <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> sa<span class='separator'>)</span> <span class='keyword'>throws</span> IOException <span class='separator'>{</span>
+<span class='lnNumb'>23:</span>        <span class='keyword'>new</span> Calculator<span class='separator'>(</span><span class='separator'>)</span>.doIt<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>24:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>25:</span>    <span class='keyword'>private</span> <span class='keyword'>void</span> doIt<span class='separator'>(</span><span class='separator'>)</span> <span class='keyword'>throws</span> IOException <span class='separator'>{</span>
+<span class='lnNumb'>26:</span>        BufferedReader brinput = <span class='keyword'>new</span> BufferedReader<span class='separator'>(</span><span class='keyword'>new</span> InputStreamReader<span class='separator'>(</span>System.in<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>27:</span>        System.out.println<span class='separator'>(</span><span class='string'>"Enter an expression: "</span><span class='separator'>)</span>;
+<span class='lnNumb'>28:</span>        <span class='keyword'>while</span><span class='separator'>(</span><span class='literal'>true</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>29:</span>            String input = brinput.readLine<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>30:</span>            ArrayDeque ad = shunting<span class='separator'>(</span>lex<span class='separator'>(</span>input<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>31:</span>            System.out.println<span class='separator'>(</span><span class='string'>"Postfix: "</span>+ad<span class='separator'>)</span>;
+<span class='lnNumb'>32:</span>            <span class='keyword'>double</span> result = evaluate<span class='separator'>(</span>ad<span class='separator'>)</span>;
+<span class='lnNumb'>33:</span>            System.out.println<span class='separator'>(</span><span class='string'>"Result: "</span>+result<span class='separator'>)</span>;
+<span class='lnNumb'>34:</span>            System.out.println<span class='separator'>(</span><span class='string'>"Enter another expression: "</span><span class='separator'>)</span>;
+<span class='lnNumb'>35:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>36:</span>        
+<span class='lnNumb'>37:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>38:</span>    <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>class</span> Token <span class='separator'>{</span>
+<span class='lnNumb'>39:</span>        <span class='keyword'>public</span> String type;
+<span class='lnNumb'>40:</span>        <span class='keyword'>public</span> String data;
+<span class='lnNumb'>41:</span>        <span class='keyword'>public</span> Token<span class='separator'>(</span>String type, String data<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>42:</span>            <span class='keyword'>this</span>.type = type;
+<span class='lnNumb'>43:</span>            <span class='keyword'>this</span>.data = data;
+<span class='lnNumb'>44:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>45:</span>        <span class='annotation'>@Override</span>
+<span class='lnNumb'>46:</span>        <span class='keyword'>public</span> String toString<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>47:</span>            <span class='keyword'>return</span> String.format<span class='separator'>(</span><span class='string'>"[%s : %s]"</span>, <span class='keyword'>this</span>.type, <span class='keyword'>this</span>.data<span class='separator'>)</span>;
+<span class='lnNumb'>48:</span>            <span class='lnComm'>//return this.data;</span>
+<span class='lnNumb'>49:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>50:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>51:</span>    <span class='lnComm'>// TODO: redo the whole lexer logic using "Scanner" phase to extract lexemes, then "Evaluator" phase to construct tokens.</span>
+<span class='lnNumb'>52:</span>    <span class='lnComm'>// http://en.m.wikipedia.org/wiki/Lexical_analyzer</span>
+<span class='lnNumb'>53:</span>    <span class='keyword'>public</span> ArrayDeque&lt;Token&gt; lex<span class='separator'>(</span>String input<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>54:</span>        <span class='lnComm'>// The tokens to return</span>
+<span class='lnNumb'>55:</span>        ArrayDeque&lt;Token&gt; tokens = <span class='keyword'>new</span> ArrayDeque&lt;Token&gt;<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>56:</span>        <span class='lnComm'>// Lexer logic begins here</span>
+<span class='lnNumb'>57:</span>        String  patterns = <span class='string'>"(?&lt;STARTNEGATE&gt;^[-])|(?&lt;OPERATOR&gt;(?&lt;![-*/+^!])[-*/+^!])|(?&lt;LEFTPARENS&gt;[(])|(?&lt;RIGHTTPARENS&gt;[)])|(?&lt;SIN&gt;sin\\(\\s*[-]?[0-9.\\s]+\\))|(?&lt;NUMBER&gt;[-]?[0-9.]+)|(?&lt;WHITESPACE&gt;[\t\f\r\n]+)"</span>;
+<span class='lnNumb'>58:</span>        Pattern tokenPatterns = Pattern.compile<span class='separator'>(</span>patterns<span class='separator'>)</span>;
+<span class='lnNumb'>59:</span>        <span class='lnComm'>// Begin matching tokens</span>
+<span class='lnNumb'>60:</span>        Matcher matcher = tokenPatterns.matcher<span class='separator'>(</span>input<span class='separator'>)</span>;
+<span class='lnNumb'>61:</span>        <span class='keyword'>while</span> <span class='separator'>(</span>matcher.find<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>62:</span>            <span class='keyword'>if</span><span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"NUMBER"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>63:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"NUMBER"</span>, matcher.group<span class='separator'>(</span><span class='string'>"NUMBER"</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>64:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>65:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"OPERATOR"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>66:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"OPERATOR"</span>, matcher.group<span class='separator'>(</span><span class='string'>"OPERATOR"</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>67:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>68:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"LEFTPARENS"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>69:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"OPERATOR"</span>, matcher.group<span class='separator'>(</span><span class='string'>"LEFTPARENS"</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>70:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>71:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"RIGHTTPARENS"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>72:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"OPERATOR"</span>, matcher.group<span class='separator'>(</span><span class='string'>"RIGHTTPARENS"</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>73:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>74:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"SIN"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>75:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"SIN"</span>, matcher.group<span class='separator'>(</span><span class='string'>"SIN"</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>76:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>77:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"STARTNEGATE"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>78:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"NUMBER"</span>, <span class='string'>"-1"</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>79:</span>                tokens.add<span class='separator'>(</span><span class='keyword'>new</span> Token<span class='separator'>(</span><span class='string'>"OPERATOR"</span>, <span class='string'>"*"</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>80:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>81:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>matcher.group<span class='separator'>(</span><span class='string'>"WHITESPACE"</span><span class='separator'>)</span> != <span class='literal'>null</span><span class='separator'>)</span>
+<span class='lnNumb'>82:</span>                <span class='keyword'>continue</span>;
+<span class='lnNumb'>83:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>84:</span>        <span class='lnComm'>// System.out.println(tokens.toString());</span>
+<span class='lnNumb'>85:</span>        <span class='keyword'>return</span> tokens;
+<span class='lnNumb'>86:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>87:</span>    <span class='keyword'>public</span> ArrayDeque shunting<span class='separator'>(</span>ArrayDeque&lt;Token&gt; infix<span class='separator'>)</span> <span class='keyword'>throws</span> IOException<span class='separator'>{</span>
+<span class='lnNumb'>88:</span>        operatorStack = <span class='keyword'>new</span> Stack&lt;Character&gt;<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>89:</span>        postfixDeque = <span class='keyword'>new</span> ArrayDeque&lt;String&gt;<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>90:</span>        <span class='keyword'>while</span> <span class='separator'>(</span>!infix.isEmpty<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>91:</span>            Token token = infix.poll<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>92:</span>            <span class='keyword'>if</span> <span class='separator'>(</span>token.type == <span class='string'>"OPERATOR"</span><span class='separator'>)</span> <span class='separator'>{</span> 
+<span class='lnNumb'>93:</span>                processOperator<span class='separator'>(</span><span class='separator'>(</span>token.data<span class='separator'>)</span>.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>94:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>token.type == <span class='string'>"SIN"</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>95:</span>                <span class='lnComm'>// TODO: This is kind of a weird place to put this... should be delegated to a more generic method.</span>
+<span class='lnNumb'>96:</span>                String d = <span class='string'>""</span>;
+<span class='lnNumb'>97:</span>                Pattern pattern = Pattern.compile<span class='separator'>(</span><span class='string'>"([-]?[0-9.]+)"</span><span class='separator'>)</span>;
+<span class='lnNumb'>98:</span>                Matcher matcher = pattern.matcher<span class='separator'>(</span>token.data<span class='separator'>)</span>;
+<span class='lnNumb'>99:</span>                <span class='keyword'>while</span> <span class='separator'>(</span>matcher.find<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>100:</span>                    d = matcher.group<span class='separator'>(</span><span class='number'>1</span><span class='separator'>)</span>;
+<span class='lnNumb'>101:</span>                <span class='separator'>}</span>
+<span class='lnNumb'>102:</span>                processOperator<span class='separator'>(</span><span class='char'>'s'</span><span class='separator'>)</span>; <span class='lnComm'>// 's' will be sin function.</span>
+<span class='lnNumb'>103:</span>                postfixDeque.add<span class='separator'>(</span>d<span class='separator'>)</span>;
+<span class='lnNumb'>104:</span>            <span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>105:</span>                postfixDeque.add<span class='separator'>(</span>token.data<span class='separator'>)</span>;
+<span class='lnNumb'>106:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>107:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>108:</span>        <span class='lnComm'>// Pop any remaining operators and</span>
+<span class='lnNumb'>109:</span>        <span class='lnComm'>// append them to postfix.</span>
+<span class='lnNumb'>110:</span>        <span class='keyword'>while</span> <span class='separator'>(</span>!operatorStack.empty<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>111:</span>            <span class='keyword'>char</span> op = operatorStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>112:</span>            postfixDeque.add<span class='separator'>(</span>String.valueOf<span class='separator'>(</span>op<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>113:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>114:</span>        <span class='keyword'>return</span> postfixDeque;
+<span class='lnNumb'>115:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>116:</span>    <span class='keyword'>private</span> <span class='keyword'>void</span> processOperator<span class='separator'>(</span><span class='keyword'>char</span> op<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>117:</span>        <span class='keyword'>if</span> <span class='separator'>(</span>operatorStack.empty<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>118:</span>            operatorStack.push<span class='separator'>(</span>op<span class='separator'>)</span>;
+<span class='lnNumb'>119:</span>        <span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>120:</span>            <span class='keyword'>char</span> topOp = operatorStack.peek<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>121:</span>            <span class='keyword'>if</span><span class='separator'>(</span>op == <span class='char'>'('</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>122:</span>                operatorStack.push<span class='separator'>(</span>op<span class='separator'>)</span>;
+<span class='lnNumb'>123:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span><span class='separator'>(</span>topOp == <span class='char'>'('</span> || precedence<span class='separator'>(</span>op<span class='separator'>)</span> &gt; precedence<span class='separator'>(</span>topOp<span class='separator'>)</span><span class='separator'>)</span> && op != <span class='char'>')'</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>124:</span>                operatorStack.push<span class='separator'>(</span>op<span class='separator'>)</span>;
+<span class='lnNumb'>125:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>op == <span class='char'>')'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>126:</span>                <span class='keyword'>while</span><span class='separator'>(</span>topOp != <span class='char'>'('</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>127:</span>                    operatorStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>128:</span>                    postfixDeque.add<span class='separator'>(</span>String.valueOf<span class='separator'>(</span>topOp<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>129:</span>                    <span class='keyword'>if</span> <span class='separator'>(</span>!operatorStack.empty<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>130:</span>                        topOp = operatorStack.peek<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>131:</span>                    <span class='separator'>}</span>
+<span class='lnNumb'>132:</span>                <span class='separator'>}</span>
+<span class='lnNumb'>133:</span>                operatorStack.pop<span class='separator'>(</span><span class='separator'>)</span>; <span class='lnComm'>// removes the right parenthesis</span>
+<span class='lnNumb'>134:</span>            <span class='separator'>}</span> <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>135:</span>                <span class='lnComm'>// Pop all stacked operators with equal</span>
+<span class='lnNumb'>136:</span>                <span class='lnComm'>// or higher precedence than op.</span>
+<span class='lnNumb'>137:</span>                <span class='keyword'>while</span> <span class='separator'>(</span>!operatorStack.empty<span class='separator'>(</span><span class='separator'>)</span> && precedence<span class='separator'>(</span>op<span class='separator'>)</span> &lt;= precedence<span class='separator'>(</span>topOp<span class='separator'>)</span> && topOp != <span class='char'>'('</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>138:</span>                    operatorStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>139:</span>                    postfixDeque.add<span class='separator'>(</span>String.valueOf<span class='separator'>(</span>topOp<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>140:</span>                    <span class='keyword'>if</span> <span class='separator'>(</span>!operatorStack.empty<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>141:</span>                        <span class='lnComm'>// Reset topOp.</span>
+<span class='lnNumb'>142:</span>                        topOp = operatorStack.peek<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>143:</span>                    <span class='separator'>}</span>
+<span class='lnNumb'>144:</span>                <span class='separator'>}</span>
+<span class='lnNumb'>145:</span>                operatorStack.push<span class='separator'>(</span>op<span class='separator'>)</span>;
+<span class='lnNumb'>146:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>147:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>148:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>149:</span>    <span class='keyword'>public</span> <span class='keyword'>double</span> evaluate<span class='separator'>(</span>ArrayDeque&lt;String&gt; postfix<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>150:</span>         <span class='keyword'>double</span> result = <span class='number'>0</span>.<span class='number'>0</span>;
+<span class='lnNumb'>151:</span>         <span class='keyword'>double</span> first = <span class='number'>0</span>.<span class='number'>0</span>;
+<span class='lnNumb'>152:</span>         <span class='keyword'>double</span> second = <span class='number'>0</span>.<span class='number'>0</span>;
+<span class='lnNumb'>153:</span>         operandStack = <span class='keyword'>new</span> Stack&lt;Double&gt;<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>154:</span>         <span class='keyword'>while</span><span class='separator'>(</span>!postfix.isEmpty<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>155:</span>            String c = postfix.poll<span class='separator'>(</span><span class='separator'>)</span>; <span class='lnComm'>//Retrieves and removes the head of the queue </span>
+<span class='lnNumb'>156:</span>            <span class='keyword'>if</span><span class='separator'>(</span>!isOperator<span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span><span class='separator'>)</span> || c.length<span class='separator'>(</span><span class='separator'>)</span> &gt; <span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// crappy hackyness - todo: fix.</span>
+<span class='lnNumb'>157:</span>                operandStack.push<span class='separator'>(</span>Double.parseDouble<span class='separator'>(</span>c<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>158:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'+'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>159:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>160:</span>                second = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>161:</span>                result = first + second;
+<span class='lnNumb'>162:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>163:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'-'</span> && c.length<span class='separator'>(</span><span class='separator'>)</span> == <span class='number'>1</span><span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>// crappy hackyness - todo: fix.</span>
+<span class='lnNumb'>164:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>165:</span>                second = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>166:</span>                result = second - first;
+<span class='lnNumb'>167:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>168:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'/'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>169:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>170:</span>                second = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>171:</span>                result = second / first;
+<span class='lnNumb'>172:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>173:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'*'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>174:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>175:</span>                second = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>176:</span>                result = first * second;
+<span class='lnNumb'>177:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>178:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'^'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>179:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>180:</span>                second = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>181:</span>                result = Math.pow<span class='separator'>(</span>second, first<span class='separator'>)</span>;
+<span class='lnNumb'>182:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>183:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'!'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>184:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>185:</span>                result = factorial<span class='separator'>(</span>first<span class='separator'>)</span>;
+<span class='lnNumb'>186:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>187:</span>            <span class='separator'>}</span><span class='keyword'>else</span> <span class='keyword'>if</span><span class='separator'>(</span>c.charAt<span class='separator'>(</span><span class='number'>0</span><span class='separator'>)</span> == <span class='char'>'s'</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>188:</span>                first = operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>189:</span>                result = Math.sin<span class='separator'>(</span>first<span class='separator'>)</span>;
+<span class='lnNumb'>190:</span>                operandStack.push<span class='separator'>(</span>result<span class='separator'>)</span>;
+<span class='lnNumb'>191:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>192:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>193:</span>        <span class='keyword'>return</span> operandStack.pop<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>194:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>195:</span>    <span class='keyword'>private</span> <span class='keyword'>double</span> factorial<span class='separator'>(</span><span class='keyword'>double</span> f<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>196:</span>        <span class='lnComm'>// TODO: if f is of the form x.0, convert to int and do !</span>
+<span class='lnNumb'>197:</span>        <span class='keyword'>if</span><span class='separator'>(</span>f%<span class='number'>1</span>  == <span class='number'>0</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>198:</span>            <span class='keyword'>int</span> count = <span class='separator'>(</span><span class='keyword'>int</span><span class='separator'>)</span>f;
+<span class='lnNumb'>199:</span>            <span class='keyword'>while</span><span class='separator'>(</span>count != <span class='number'>2</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>200:</span>                count--;
+<span class='lnNumb'>201:</span>                f *= count;
+<span class='lnNumb'>202:</span>            <span class='separator'>}</span>
+<span class='lnNumb'>203:</span>            <span class='keyword'>return</span> f;
+<span class='lnNumb'>204:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>205:</span>        <span class='lnComm'>// Stirling's approximation</span>
+<span class='lnNumb'>206:</span>        <span class='lnComm'>// return st_gamma(f);</span>
+<span class='lnNumb'>207:</span>        <span class='lnComm'>//Lanczos approximation. seems more accurate - this is offest by 1, meaning, if you do 7.0!, you will get ~720, whereas 6! = 720</span>
+<span class='lnNumb'>208:</span>        <span class='keyword'>return</span> la_gamma<span class='separator'>(</span>f<span class='separator'>)</span>;
+<span class='lnNumb'>209:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>210:</span>    
+<span class='lnNumb'>211:</span>    <span class='lnComm'>// private helper methods:</span>
+<span class='lnNumb'>212:</span>    <span class='lnComm'>//Stirling's approximation</span>
+<span class='lnNumb'>213:</span>    <span class='keyword'>private</span> <span class='keyword'>double</span> st_gamma<span class='separator'>(</span><span class='keyword'>double</span> x<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>214:</span>        <span class='keyword'>return</span> Math.sqrt<span class='separator'>(</span><span class='number'>2</span>*Math.PI/x<span class='separator'>)</span>*Math.pow<span class='separator'>(</span><span class='separator'>(</span>x/Math.E<span class='separator'>)</span>, x<span class='separator'>)</span>;
+<span class='lnNumb'>215:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>216:</span>    <span class='lnComm'>//Lanczos approximation. </span>
+<span class='lnNumb'>217:</span>    <span class='keyword'>private</span> <span class='keyword'>double</span> la_gamma<span class='separator'>(</span><span class='keyword'>double</span> x<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>218:</span>        <span class='keyword'>double</span><span class='separator'>[</span><span class='separator'>]</span> p = <span class='separator'>{</span>0.<span class='number'>99999999999980993</span>, <span class='number'>676</span>.<span class='number'>5203681218851</span>, -<span class='number'>1259</span>.<span class='number'>1392167224028</span>,
+<span class='lnNumb'>219:</span>                      <span class='number'>771</span>.<span class='number'>32342877765313</span>, -<span class='number'>176</span>.<span class='number'>61502916214059</span>, <span class='number'>12</span>.<span class='number'>507343278686905</span>,
+<span class='lnNumb'>220:</span>                      -<span class='number'>0</span>.<span class='number'>13857109526572012</span>, <span class='number'>9</span>.<span class='number'>9843695780195716e</span>-<span class='number'>6</span>, <span class='number'>1</span>.<span class='number'>5056327351493116e</span>-<span class='number'>7<span class='separator'>}</span></span>;
+<span class='lnNumb'>221:</span>        <span class='keyword'>int</span> g = <span class='number'>7</span>;
+<span class='lnNumb'>222:</span>        <span class='keyword'>if</span><span class='separator'>(</span>x &lt; <span class='number'>0</span>.<span class='number'>5</span><span class='separator'>)</span> <span class='keyword'>return</span> Math.PI / <span class='separator'>(</span>Math.sin<span class='separator'>(</span>Math.PI * x<span class='separator'>)</span>*la_gamma<span class='separator'>(</span><span class='number'>1</span>-x<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>223:</span>        x -= <span class='number'>1</span>;
+<span class='lnNumb'>224:</span>        <span class='keyword'>double</span> a = p<span class='separator'>[</span><span class='number'>0</span><span class='separator'>]</span>;
+<span class='lnNumb'>225:</span>        <span class='keyword'>double</span> t = x+g+<span class='number'>0</span>.<span class='number'>5</span>;
+<span class='lnNumb'>226:</span>        <span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>1</span>; i &lt; p.length; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>227:</span>            a += p<span class='separator'>[</span>i<span class='separator'>]</span>/<span class='separator'>(</span>x+i<span class='separator'>)</span>;
+<span class='lnNumb'>228:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>229:</span>        <span class='keyword'>return</span> Math.sqrt<span class='separator'>(</span><span class='number'>2</span>*Math.PI<span class='separator'>)</span>*Math.pow<span class='separator'>(</span>t, x+<span class='number'>0</span>.<span class='number'>5</span><span class='separator'>)</span>*Math.exp<span class='separator'>(</span>-t<span class='separator'>)</span>*a;
+<span class='lnNumb'>230:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>231:</span>    <span class='keyword'>private</span> <span class='keyword'>static</span> BufferedReader stringToBR<span class='separator'>(</span>String str<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>232:</span>        InputStream is = <span class='keyword'>new</span> ByteArrayInputStream<span class='separator'>(</span>str.getBytes<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>233:</span>        BufferedReader br = <span class='keyword'>new</span> BufferedReader<span class='separator'>(</span><span class='keyword'>new</span> InputStreamReader<span class='separator'>(</span>is<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>234:</span>        <span class='keyword'>return</span> br;
+<span class='lnNumb'>235:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>236:</span>    <span class='keyword'>private</span> <span class='keyword'>boolean</span> isOperator<span class='separator'>(</span><span class='keyword'>char</span> ch<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>237:</span>        <span class='keyword'>return</span> OPERATORS.indexOf<span class='separator'>(</span>ch<span class='separator'>)</span> != -<span class='number'>1</span>;
+<span class='lnNumb'>238:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>239:</span>    <span class='keyword'>private</span> <span class='keyword'>int</span> precedence<span class='separator'>(</span><span class='keyword'>char</span> op<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>240:</span>        <span class='keyword'>return</span> PRECEDENCE<span class='separator'>[</span>OPERATORS.indexOf<span class='separator'>(</span>op<span class='separator'>)</span><span class='separator'>]</span>;
+<span class='lnNumb'>241:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>242:</span><span class='separator'>}</span></pre> </body></html>

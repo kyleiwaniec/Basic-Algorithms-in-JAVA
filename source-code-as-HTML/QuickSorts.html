@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.util.Arrays;
+<span class='lnNumb'>2:</span><span class='keyword'>import</span> java.util.Random;
+<span class='lnNumb'>3:</span><span class='keyword'>import</span> java.util.Date;
+<span class='lnNumb'>4:</span><span class='keyword'>import</span> java.io.*;
+<span class='lnNumb'>5:</span><span class='keyword'>public</span> <span class='keyword'>class</span> QuickSorts<span class='separator'>{</span>
+<span class='lnNumb'>6:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> args<span class='separator'>)</span><span class='keyword'>throws</span> IOException <span class='separator'>{</span>
+<span class='lnNumb'>7:</span>    File file = <span class='keyword'>new</span> File<span class='separator'>(</span><span class='string'>"crimeandpunishment/all.txt"</span><span class='separator'>)</span>;
+<span class='lnNumb'>8:</span>    BufferedReader br = <span class='keyword'>new</span> BufferedReader<span class='separator'>(</span><span class='keyword'>new</span> InputStreamReader<span class='separator'>(</span><span class='keyword'>new</span> FileInputStream<span class='separator'>(</span>file<span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>9:</span>    String line = <span class='literal'>null</span>;
+<span class='lnNumb'>10:</span>    String<span class='separator'>[</span><span class='separator'>]</span> words = <span class='keyword'>new</span> String<span class='separator'>[</span><span class='number'>220000</span><span class='separator'>]</span>;
+<span class='lnNumb'>11:</span>    <span class='keyword'>int</span> j = <span class='number'>0</span>;
+<span class='lnNumb'>12:</span>    <span class='keyword'>while</span><span class='separator'>(</span> <span class='separator'>(</span>line = br.readLine<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>!= <span class='literal'>null</span> <span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>13:</span>            <span class='lnComm'>// \\s+ means any number of whitespaces between tokens</span>
+<span class='lnNumb'>14:</span>        String <span class='separator'>[</span><span class='separator'>]</span> tokens = line.split<span class='separator'>(</span><span class='string'>"\\s+"</span><span class='separator'>)</span>;
+<span class='lnNumb'>15:</span>        <span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; tokens.length; i++, j++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>16:</span>          words<span class='separator'>[</span>j<span class='separator'>]</span> = tokens<span class='separator'>[</span>i<span class='separator'>]</span>;
+<span class='lnNumb'>17:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>18:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>19:</span>    <span class='lnComm'>// a little hackery shmuckery to fill the array</span>
+<span class='lnNumb'>20:</span>    <span class='keyword'>for</span><span class='separator'>(</span><span class='keyword'>int</span> i = j; i &lt; <span class='number'>220000</span>; i++<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>21:</span>      words<span class='separator'>[</span>i<span class='separator'>]</span> = <span class='string'>"null"</span>;
+<span class='lnNumb'>22:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>23:</span><span class='lnComm'>//     String[] words = {"Dostoevsky", "was", "the", "son", "of", "a", "doctor", "His", "parents", "were", "very", "hard-working",</span>
+<span class='lnNumb'>24:</span><span class='lnComm'>// "and", "deeply", "religious", "people"};</span>
+<span class='lnNumb'>25:</span>    <span class='lnComm'>//System.out.println("before sort: "+toString(words));</span>
+<span class='lnNumb'>26:</span>      Date start = <span class='keyword'>new</span> Date<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>27:</span>      <span class='lnComm'>//quicksort_other(words, 0, words.length - 1);  </span>
+<span class='lnNumb'>28:</span>      quicksort<span class='separator'>(</span>words, <span class='number'>0</span>, words.length - <span class='number'>1</span><span class='separator'>)</span>; 
+<span class='lnNumb'>29:</span>      <span class='lnComm'>//mergeSort(words); </span>
+<span class='lnNumb'>30:</span>      <span class='lnComm'>//bubblesort(words); // total disaster. I don't even feel like waiting fo rit to finish!</span>
+<span class='lnNumb'>31:</span>      <span class='lnComm'>//Arrays.sort(words); </span>
+<span class='lnNumb'>32:</span>      Date end = <span class='keyword'>new</span> Date<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>33:</span>      <span class='lnComm'>//System.out.println(toString(words));</span>
+<span class='lnNumb'>34:</span>      System.out.println<span class='separator'>(</span><span class='string'>"time to sort 'Crime and Punishment':"</span> +<span class='separator'>(</span>end.getTime<span class='separator'>(</span><span class='separator'>)</span>-start.getTime<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> + <span class='string'>" miliseconds"</span><span class='separator'>)</span>;
+<span class='lnNumb'>35:</span>      Date start2 = <span class='keyword'>new</span> Date<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>36:</span>      <span class='lnComm'>//quicksort_other(words, 0, words.length - 1);  </span>
+<span class='lnNumb'>37:</span>      quicksort<span class='separator'>(</span>words, <span class='number'>0</span>, words.length - <span class='number'>1</span><span class='separator'>)</span>; 
+<span class='lnNumb'>38:</span>      <span class='lnComm'>//mergeSort(words); </span>
+<span class='lnNumb'>39:</span>      <span class='lnComm'>//insertionSort(words);</span>
+<span class='lnNumb'>40:</span>      <span class='lnComm'>//Arrays.sort(words); </span>
+<span class='lnNumb'>41:</span>      Date end2 = <span class='keyword'>new</span> Date<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>42:</span>      <span class='lnComm'>//System.out.println("sorted words:" +toString(words));</span>
+<span class='lnNumb'>43:</span>      System.out.println<span class='separator'>(</span><span class='string'>"time to sort the presorted 'Crime and Punishment':"</span> +<span class='separator'>(</span>end2.getTime<span class='separator'>(</span><span class='separator'>)</span>-start2.getTime<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span> + <span class='string'>" miliseconds"</span><span class='separator'>)</span>;
+<span class='lnNumb'>44:</span>        
+<span class='lnNumb'>45:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>46:</span>  <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>final</span> <span class='keyword'>int</span> CUTOFF = <span class='number'>10</span>;
+<span class='lnNumb'>47:</span>    
+<span class='lnNumb'>48:</span>    <span class='blComm'>/**
+<span class='lnNumb'>49:</span>     * Internal quicksort method that makes recursive calls.
+<span class='lnNumb'>50:</span>     * Uses median-of-three partitioning and a cutoff of 10.
+<span class='lnNumb'>51:</span>     * <span class='annotation'>@param</span> a an array of Comparable items.
+<span class='lnNumb'>52:</span>     * <span class='annotation'>@param</span> low the left-most index of the subarray.
+<span class='lnNumb'>53:</span>     * <span class='annotation'>@param</span> high the right-most index of the subarray.
+<span class='lnNumb'>54:</span>     */</span>
+<span class='lnNumb'>55:</span>  <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>void</span> quicksort_other<span class='separator'>(</span> Comparable<span class='separator'>[</span><span class='separator'>]</span> a, <span class='keyword'>int</span> low, <span class='keyword'>int</span> high <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>56:</span>      <span class='keyword'>if</span><span class='separator'>(</span> low + CUTOFF &gt; high <span class='separator'>)</span>
+<span class='lnNumb'>57:</span>          insertionSort<span class='separator'>(</span> a, low, high <span class='separator'>)</span>;
+<span class='lnNumb'>58:</span>      <span class='keyword'>else</span> <span class='separator'>{</span>
+<span class='lnNumb'>59:</span>          <span class='lnComm'>// Sort low, middle, high</span>
+<span class='lnNumb'>60:</span>          <span class='keyword'>int</span> middle = <span class='separator'>(</span> low + high <span class='separator'>)</span> / <span class='number'>2</span>;
+<span class='lnNumb'>61:</span>          <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> middle <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> low <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>62:</span>              exch<span class='separator'>(</span> a, low, middle <span class='separator'>)</span>;
+<span class='lnNumb'>63:</span>          <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> high <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> low <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>64:</span>              exch<span class='separator'>(</span> a, low, high <span class='separator'>)</span>;
+<span class='lnNumb'>65:</span>          <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> high <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> middle <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>66:</span>              exch<span class='separator'>(</span> a, middle, high <span class='separator'>)</span>;
+<span class='lnNumb'>67:</span>          
+<span class='lnNumb'>68:</span>          <span class='lnComm'>// Place pivot at position high - 1<span class='number'></span></span>
+<span class='lnNumb'>69:</span>          exch<span class='separator'>(</span> a, middle, high - <span class='number'>1</span> <span class='separator'>)</span>;
+<span class='lnNumb'>70:</span>          Comparable pivot = a<span class='separator'>[</span> high - <span class='number'>1</span> <span class='separator'>]</span>;
+<span class='lnNumb'>71:</span>          
+<span class='lnNumb'>72:</span>          <span class='lnComm'>// Begin partitioning</span>
+<span class='lnNumb'>73:</span>          <span class='keyword'>int</span> i, j;
+<span class='lnNumb'>74:</span>          <span class='keyword'>for</span><span class='separator'>(</span> i = low, j = high - <span class='number'>1</span>; ; <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>75:</span>              <span class='keyword'>while</span><span class='separator'>(</span> a<span class='separator'>[</span> ++i <span class='separator'>]</span>.compareTo<span class='separator'>(</span> pivot <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>76:</span>                  ;
+<span class='lnNumb'>77:</span>              <span class='keyword'>while</span><span class='separator'>(</span> pivot.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> --j <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>78:</span>                  ;
+<span class='lnNumb'>79:</span>              <span class='keyword'>if</span><span class='separator'>(</span> i &gt;= j <span class='separator'>)</span>
+<span class='lnNumb'>80:</span>                  <span class='keyword'>break</span>;
+<span class='lnNumb'>81:</span>              exch<span class='separator'>(</span> a, i, j <span class='separator'>)</span>;
+<span class='lnNumb'>82:</span>          <span class='separator'>}</span>
+<span class='lnNumb'>83:</span>          
+<span class='lnNumb'>84:</span>          <span class='lnComm'>// Restore pivot</span>
+<span class='lnNumb'>85:</span>          exch<span class='separator'>(</span> a, i, high - <span class='number'>1</span> <span class='separator'>)</span>;
+<span class='lnNumb'>86:</span>          
+<span class='lnNumb'>87:</span>          quicksort_other<span class='separator'>(</span> a, low, i - <span class='number'>1</span> <span class='separator'>)</span>;    <span class='lnComm'>// Sort small elements</span>
+<span class='lnNumb'>88:</span>          quicksort_other<span class='separator'>(</span> a, i + <span class='number'>1</span>, high <span class='separator'>)</span>;   <span class='lnComm'>// Sort large elements</span>
+<span class='lnNumb'>89:</span>      <span class='separator'>}</span>
+<span class='lnNumb'>90:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>91:</span>  <span class='blComm'>/**
+<span class='lnNumb'>92:</span>   * Internal insertion sort routine for subarrays
+<span class='lnNumb'>93:</span>   * that is used by quicksort.
+<span class='lnNumb'>94:</span>   * <span class='annotation'>@param</span> a an array of Comparable items.
+<span class='lnNumb'>95:</span>   * <span class='annotation'>@param</span> low the left-most index of the subarray.
+<span class='lnNumb'>96:</span>   * <span class='annotation'>@param</span> n the number of items to sort.
+<span class='lnNumb'>97:</span>   */</span>
+<span class='lnNumb'>98:</span>  <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>void</span> insertionSort<span class='separator'>(</span> Comparable<span class='separator'>[</span><span class='separator'>]</span> a, <span class='keyword'>int</span> low, <span class='keyword'>int</span> high <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>99:</span>      <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> p = low + <span class='number'>1</span>; p &lt;= high; p++ <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>100:</span>          Comparable tmp = a<span class='separator'>[</span> p <span class='separator'>]</span>;
+<span class='lnNumb'>101:</span>          <span class='keyword'>int</span> j;
+<span class='lnNumb'>102:</span>          
+<span class='lnNumb'>103:</span>          <span class='keyword'>for</span><span class='separator'>(</span> j = p; j &gt; low && tmp.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> j - <span class='number'>1</span> <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span>; j-- <span class='separator'>)</span>
+<span class='lnNumb'>104:</span>              a<span class='separator'>[</span> j <span class='separator'>]</span> = a<span class='separator'>[</span> j - <span class='number'>1</span> <span class='separator'>]</span>;
+<span class='lnNumb'>105:</span>          a<span class='separator'>[</span> j <span class='separator'>]</span> = tmp;
+<span class='lnNumb'>106:</span>      <span class='separator'>}</span>
+<span class='lnNumb'>107:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>108:</span><span class='lnComm'>// by using the Comparable[] I can sort any data structure thqt implements comparable (has a compareTo method)<span class='separator'></span></span>
+<span class='lnNumb'>109:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> insertionSortReverse<span class='separator'>(</span>Comparable<span class='separator'>[</span><span class='separator'>]</span> a<span class='separator'>)</span><span class='separator'>{</span>  <span class='lnComm'>// high to low</span>
+<span class='lnNumb'>110:</span>     <span class='keyword'>int</span> j;                  <span class='lnComm'>// the number of items sorted so far</span>
+<span class='lnNumb'>111:</span>     Comparable key;                <span class='lnComm'>// the item to be inserted</span>
+<span class='lnNumb'>112:</span>     <span class='keyword'>int</span> i;  
+<span class='lnNumb'>113:</span>     <span class='lnComm'>// Start with 1 (not 0)<span class='separator'></span></span>
+<span class='lnNumb'>114:</span>     <span class='keyword'>for</span> <span class='separator'>(</span>j = <span class='number'>1</span>; j &lt; a.length; j++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>115:</span>           key = a<span class='separator'>[</span>j<span class='separator'>]</span>;
+<span class='lnNumb'>116:</span>           <span class='keyword'>for</span><span class='separator'>(</span>i = j - <span class='number'>1</span>; <span class='separator'>(</span>i &gt;= <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>a<span class='separator'>[</span>i<span class='separator'>]</span>.compareTo<span class='separator'>(</span>key<span class='separator'>)</span> &lt; <span class='number'>0</span><span class='separator'>)</span>; i--<span class='separator'>)</span><span class='separator'>{</span> <span class='lnComm'>//a[ i ] &lt; key</span>
+<span class='lnNumb'>117:</span>                 a<span class='separator'>[</span>i+<span class='number'>1</span><span class='separator'>]</span> = a<span class='separator'>[</span>i<span class='separator'>]</span>;
+<span class='lnNumb'>118:</span>          <span class='separator'>}</span>
+<span class='lnNumb'>119:</span>         a<span class='separator'>[</span>i+<span class='number'>1</span><span class='separator'>]</span> = key;    <span class='lnComm'>// Put the key in its proper location</span>
+<span class='lnNumb'>120:</span>     <span class='separator'>}</span>
+<span class='lnNumb'>121:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>122:</span> <span class='blComm'>/**
+<span class='lnNumb'>123:</span>   * Mergesort algorithm.
+<span class='lnNumb'>124:</span>   * <span class='annotation'>@param</span> a an array of Comparable items.
+<span class='lnNumb'>125:</span>   */</span>
+<span class='lnNumb'>126:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> mergeSort<span class='separator'>(</span> Comparable <span class='separator'>[</span> <span class='separator'>]</span> a <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>127:</span>      Comparable <span class='separator'>[</span> <span class='separator'>]</span> tmpArray = <span class='keyword'>new</span> Comparable<span class='separator'>[</span> a.length <span class='separator'>]</span>;
+<span class='lnNumb'>128:</span>      mergeSort<span class='separator'>(</span> a, tmpArray, <span class='number'>0</span>, a.length - <span class='number'>1</span> <span class='separator'>)</span>;
+<span class='lnNumb'>129:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>130:</span>  
+<span class='lnNumb'>131:</span>  <span class='blComm'>/**
+<span class='lnNumb'>132:</span>   * Internal method that makes recursive calls.
+<span class='lnNumb'>133:</span>   * <span class='annotation'>@param</span> a an array of Comparable items.
+<span class='lnNumb'>134:</span>   * <span class='annotation'>@param</span> tmpArray an array to place the merged result.
+<span class='lnNumb'>135:</span>   * <span class='annotation'>@param</span> left the left-most index of the subarray.
+<span class='lnNumb'>136:</span>   * <span class='annotation'>@param</span> right the right-most index of the subarray.
+<span class='lnNumb'>137:</span>   */</span>
+<span class='lnNumb'>138:</span>  <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>void</span> mergeSort<span class='separator'>(</span> Comparable <span class='separator'>[</span> <span class='separator'>]</span> a, Comparable <span class='separator'>[</span> <span class='separator'>]</span> tmpArray,
+<span class='lnNumb'>139:</span>          <span class='keyword'>int</span> left, <span class='keyword'>int</span> right <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>140:</span>      <span class='keyword'>if</span><span class='separator'>(</span> left &lt; right <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>141:</span>          <span class='keyword'>int</span> center = <span class='separator'>(</span> left + right <span class='separator'>)</span> / <span class='number'>2</span>;
+<span class='lnNumb'>142:</span>          mergeSort<span class='separator'>(</span> a, tmpArray, left, center <span class='separator'>)</span>;
+<span class='lnNumb'>143:</span>          mergeSort<span class='separator'>(</span> a, tmpArray, center + <span class='number'>1</span>, right <span class='separator'>)</span>;
+<span class='lnNumb'>144:</span>          merge<span class='separator'>(</span> a, tmpArray, left, center + <span class='number'>1</span>, right <span class='separator'>)</span>;
+<span class='lnNumb'>145:</span>      <span class='separator'>}</span>
+<span class='lnNumb'>146:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>147:</span>  
+<span class='lnNumb'>148:</span>  <span class='blComm'>/**
+<span class='lnNumb'>149:</span>   * Internal method that merges two sorted halves of a subarray.
+<span class='lnNumb'>150:</span>   * <span class='annotation'>@param</span> a an array of Comparable items.
+<span class='lnNumb'>151:</span>   * <span class='annotation'>@param</span> tmpArray an array to place the merged result.
+<span class='lnNumb'>152:</span>   * <span class='annotation'>@param</span> leftPos the left-most index of the subarray.
+<span class='lnNumb'>153:</span>   * <span class='annotation'>@param</span> rightPos the index of the start of the second half.
+<span class='lnNumb'>154:</span>   * <span class='annotation'>@param</span> rightEnd the right-most index of the subarray.
+<span class='lnNumb'>155:</span>   */</span>
+<span class='lnNumb'>156:</span>  <span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>void</span> merge<span class='separator'>(</span> Comparable <span class='separator'>[</span> <span class='separator'>]</span> a, Comparable <span class='separator'>[</span> <span class='separator'>]</span> tmpArray,
+<span class='lnNumb'>157:</span>      <span class='keyword'>int</span> leftPos, <span class='keyword'>int</span> rightPos, <span class='keyword'>int</span> rightEnd <span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>158:</span>      <span class='keyword'>int</span> leftEnd = rightPos - <span class='number'>1</span>;
+<span class='lnNumb'>159:</span>      <span class='keyword'>int</span> tmpPos = leftPos;
+<span class='lnNumb'>160:</span>      <span class='keyword'>int</span> numElements = rightEnd - leftPos + <span class='number'>1</span>;
+<span class='lnNumb'>161:</span>      
+<span class='lnNumb'>162:</span>      <span class='lnComm'>// Main loop</span>
+<span class='lnNumb'>163:</span>      <span class='keyword'>while</span><span class='separator'>(</span> leftPos &lt;= leftEnd && rightPos &lt;= rightEnd <span class='separator'>)</span>
+<span class='lnNumb'>164:</span>          <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> leftPos <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> rightPos <span class='separator'>]</span> <span class='separator'>)</span> &lt;= <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>165:</span>              tmpArray<span class='separator'>[</span> tmpPos++ <span class='separator'>]</span> = a<span class='separator'>[</span> leftPos++ <span class='separator'>]</span>;
+<span class='lnNumb'>166:</span>          <span class='keyword'>else</span>
+<span class='lnNumb'>167:</span>              tmpArray<span class='separator'>[</span> tmpPos++ <span class='separator'>]</span> = a<span class='separator'>[</span> rightPos++ <span class='separator'>]</span>;
+<span class='lnNumb'>168:</span>      
+<span class='lnNumb'>169:</span>      <span class='keyword'>while</span><span class='separator'>(</span> leftPos &lt;= leftEnd <span class='separator'>)</span>    <span class='lnComm'>// Copy rest of first half</span>
+<span class='lnNumb'>170:</span>          tmpArray<span class='separator'>[</span> tmpPos++ <span class='separator'>]</span> = a<span class='separator'>[</span> leftPos++ <span class='separator'>]</span>;
+<span class='lnNumb'>171:</span>      
+<span class='lnNumb'>172:</span>      <span class='keyword'>while</span><span class='separator'>(</span> rightPos &lt;= rightEnd <span class='separator'>)</span>  <span class='lnComm'>// Copy rest of right half</span>
+<span class='lnNumb'>173:</span>          tmpArray<span class='separator'>[</span> tmpPos++ <span class='separator'>]</span> = a<span class='separator'>[</span> rightPos++ <span class='separator'>]</span>;
+<span class='lnNumb'>174:</span>      
+<span class='lnNumb'>175:</span>      <span class='lnComm'>// Copy tmpArray back</span>
+<span class='lnNumb'>176:</span>      <span class='keyword'>for</span><span class='separator'>(</span> <span class='keyword'>int</span> i = <span class='number'>0</span>; i &lt; numElements; i++, rightEnd-- <span class='separator'>)</span>
+<span class='lnNumb'>177:</span>          a<span class='separator'>[</span> rightEnd <span class='separator'>]</span> = tmpArray<span class='separator'>[</span> rightEnd <span class='separator'>]</span>;
+<span class='lnNumb'>178:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>179:</span> 
+<span class='lnNumb'>180:</span>  
+<span class='lnNumb'>181:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> exch<span class='separator'>(</span>Object<span class='separator'>[</span><span class='separator'>]</span> a, <span class='keyword'>int</span> i, <span class='keyword'>int</span> j<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>182:</span>      Object temp = a<span class='separator'>[</span>i<span class='separator'>]</span>;
+<span class='lnNumb'>183:</span>          a<span class='separator'>[</span>i<span class='separator'>]</span> = a<span class='separator'>[</span>j<span class='separator'>]</span>;
+<span class='lnNumb'>184:</span>          a<span class='separator'>[</span>j<span class='separator'>]</span> = temp;
+<span class='lnNumb'>185:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>186:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> quicksort<span class='separator'>(</span>Comparable<span class='separator'>[</span><span class='separator'>]</span> a, <span class='keyword'>int</span> low, <span class='keyword'>int</span> high<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>187:</span>    <span class='keyword'>if</span><span class='separator'>(</span> low + CUTOFF &gt; high <span class='separator'>)</span>
+<span class='lnNumb'>188:</span>            insertionSort<span class='separator'>(</span> a, low, high <span class='separator'>)</span>;
+<span class='lnNumb'>189:</span>    <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span>low &lt; high<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>190:</span>       <span class='keyword'>int</span> middle = <span class='separator'>(</span> low + high <span class='separator'>)</span> / <span class='number'>2</span>;
+<span class='lnNumb'>191:</span>      <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> middle <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> low <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>192:</span>          exch<span class='separator'>(</span> a, low, middle <span class='separator'>)</span>;
+<span class='lnNumb'>193:</span>      <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> high <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> low <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>194:</span>          exch<span class='separator'>(</span> a, low, high <span class='separator'>)</span>;
+<span class='lnNumb'>195:</span>      <span class='keyword'>if</span><span class='separator'>(</span> a<span class='separator'>[</span> high <span class='separator'>]</span>.compareTo<span class='separator'>(</span> a<span class='separator'>[</span> middle <span class='separator'>]</span> <span class='separator'>)</span> &lt; <span class='number'>0</span> <span class='separator'>)</span>
+<span class='lnNumb'>196:</span>          exch<span class='separator'>(</span> a, middle, high <span class='separator'>)</span>;
+<span class='lnNumb'>197:</span>      <span class='lnComm'>// Place pivot at position high </span>
+<span class='lnNumb'>198:</span>      exch<span class='separator'>(</span> a, middle, high  <span class='separator'>)</span>;
+<span class='lnNumb'>199:</span>      Comparable pivot = a<span class='separator'>[</span> high  <span class='separator'>]</span>;
+<span class='lnNumb'>200:</span>      <span class='lnComm'>// int pivotIndex = randInt(low, high);</span>
+<span class='lnNumb'>201:</span>      <span class='lnComm'>// Comparable pivot = a[pivotIndex];</span>
+<span class='lnNumb'>202:</span>      <span class='lnComm'>// a[pivotIndex] = a[high];                       // this is worse than choosing high!!! apparently the extra function and swap really slows shit down</span>
+<span class='lnNumb'>203:</span>      <span class='lnComm'>// a[high] = pivot;</span>
+<span class='lnNumb'>204:</span>      <span class='lnComm'>//Comparable pivot = a[high];</span>
+<span class='lnNumb'>205:</span>      <span class='keyword'>int</span> i = low - <span class='number'>1</span>;
+<span class='lnNumb'>206:</span>      <span class='keyword'>int</span> j = high;
+<span class='lnNumb'>207:</span>      <span class='keyword'>do</span> <span class='separator'>{</span>
+<span class='lnNumb'>208:</span>        <span class='keyword'>do</span> <span class='separator'>{</span> i++; <span class='separator'>}</span> <span class='keyword'>while</span> <span class='separator'>(</span>a<span class='separator'>[</span>i<span class='separator'>]</span>.compareTo<span class='separator'>(</span>pivot<span class='separator'>)</span> &lt; <span class='number'>0</span><span class='separator'>)</span>;
+<span class='lnNumb'>209:</span>        <span class='keyword'>do</span> <span class='separator'>{</span> j--; <span class='separator'>}</span> <span class='keyword'>while</span> <span class='separator'>(</span><span class='separator'>(</span>a<span class='separator'>[</span>j<span class='separator'>]</span>.compareTo<span class='separator'>(</span>pivot<span class='separator'>)</span> &gt; <span class='number'>0</span><span class='separator'>)</span> && <span class='separator'>(</span>j &gt; low<span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>210:</span>        <span class='keyword'>if</span> <span class='separator'>(</span>i &lt; j<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>211:</span>          exch<span class='separator'>(</span>a, i, j<span class='separator'>)</span>;
+<span class='lnNumb'>212:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>213:</span>      <span class='separator'>}</span> <span class='keyword'>while</span> <span class='separator'>(</span>i &lt; j<span class='separator'>)</span>;
+<span class='lnNumb'>214:</span>      <span class='lnComm'>// a[high] = a[i];</span>
+<span class='lnNumb'>215:</span>      <span class='lnComm'>// a[i] = pivot;    // Put pivot in the middle where it belongs</span>
+<span class='lnNumb'>216:</span>      exch<span class='separator'>(</span> a, i, high <span class='separator'>)</span>;     
+<span class='lnNumb'>217:</span>      quicksort<span class='separator'>(</span>a, low, i - <span class='number'>1</span><span class='separator'>)</span>;                     <span class='lnComm'>// Recursively sort left list</span>
+<span class='lnNumb'>218:</span>      quicksort<span class='separator'>(</span>a, i + <span class='number'>1</span>, high<span class='separator'>)</span>;                   <span class='lnComm'>// Recursively sort right list</span>
+<span class='lnNumb'>219:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>220:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>221:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>int</span> randInt<span class='separator'>(</span><span class='keyword'>int</span> min, <span class='keyword'>int</span> max<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>222:</span>      <span class='lnComm'>// Usually this can be a field rather than a method variable</span>
+<span class='lnNumb'>223:</span>      Random rand = <span class='keyword'>new</span> Random<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>224:</span>      <span class='lnComm'>// nextInt is normally exclusive of the top value,</span>
+<span class='lnNumb'>225:</span>      <span class='lnComm'>// so add 1 to make it inclusive</span>
+<span class='lnNumb'>226:</span>      <span class='keyword'>int</span> randomNum = rand.nextInt<span class='separator'>(</span><span class='separator'>(</span>max - min<span class='separator'>)</span> + <span class='number'>1</span><span class='separator'>)</span> + min;
+<span class='lnNumb'>227:</span>      <span class='keyword'>return</span> randomNum;
+<span class='lnNumb'>228:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>229:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> bubblesort<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> s<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>230:</span>    <span class='keyword'>int</span> n = s.length;
+<span class='lnNumb'>231:</span>    String swap = <span class='string'>""</span>;
+<span class='lnNumb'>232:</span>    <span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> c = <span class='number'>0</span>; c &lt; <span class='separator'>(</span> n - <span class='number'>1</span> <span class='separator'>)</span>; c++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>233:</span>      <span class='keyword'>for</span> <span class='separator'>(</span><span class='keyword'>int</span> d = <span class='number'>0</span>; d &lt; n - c - <span class='number'>1</span>; d++<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>234:</span>        <span class='keyword'>if</span> <span class='separator'>(</span>s<span class='separator'>[</span>d<span class='separator'>]</span>.compareTo<span class='separator'>(</span>s<span class='separator'>[</span>d+<span class='number'>1</span><span class='separator'>]</span><span class='separator'>)</span> &gt; <span class='number'>0</span><span class='separator'>)</span> <span class='blComm'>/* For descending order use &lt; */</span>
+<span class='lnNumb'>235:</span>        <span class='separator'>{</span>
+<span class='lnNumb'>236:</span>          swap  = s<span class='separator'>[</span>d<span class='separator'>]</span>;
+<span class='lnNumb'>237:</span>          s<span class='separator'>[</span>d<span class='separator'>]</span>  = s<span class='separator'>[</span>d+<span class='number'>1</span><span class='separator'>]</span>;
+<span class='lnNumb'>238:</span>          s<span class='separator'>[</span>d+<span class='number'>1</span><span class='separator'>]</span> = swap;
+<span class='lnNumb'>239:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>240:</span>      <span class='separator'>}</span>
+<span class='lnNumb'>241:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>242:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>243:</span>  <span class='keyword'>public</span> <span class='keyword'>static</span> String toString<span class='separator'>(</span>Comparable<span class='separator'>[</span><span class='separator'>]</span> a<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>244:</span>    <span class='lnComm'>//StringBuilder sb = new StringBuilder();</span>
+<span class='lnNumb'>245:</span>       <span class='lnComm'>// for(int i = 0; i &lt; a.length; i++){<span class='separator'></span></span>
+<span class='lnNumb'>246:</span>    <span class='lnComm'>//   sb.append(", "+a[i]);</span>
+<span class='lnNumb'>247:</span>    <span class='lnComm'>// }<span class='separator'></span></span>
+<span class='lnNumb'>248:</span>    <span class='lnComm'>//sb.deleteCharAt(0);</span>
+<span class='lnNumb'>249:</span>    <span class='lnComm'>//return sb.toString();</span>
+<span class='lnNumb'>250:</span>    <span class='keyword'>return</span> Arrays.toString<span class='separator'>(</span>a<span class='separator'>)</span>;
+<span class='lnNumb'>251:</span>    
+<span class='lnNumb'>252:</span>  <span class='separator'>}</span>
+<span class='lnNumb'>253:</span><span class='separator'>}</span></pre> </body></html>

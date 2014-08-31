@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>public</span> <span class='keyword'>class</span> BinaryException <span class='keyword'>extends</span> Exception<span class='separator'>{</span>
+<span class='lnNumb'>2:</span>	<span class='keyword'>private</span> String description;
+<span class='lnNumb'>3:</span>	<span class='keyword'>public</span> BinaryException<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>4:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>5:</span>	<span class='keyword'>public</span> BinaryException<span class='separator'>(</span>String description<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>6:</span>		<span class='keyword'>super</span><span class='separator'>(</span>description<span class='separator'>)</span>;
+<span class='lnNumb'>7:</span>		<span class='keyword'>this</span>.description = description;
+<span class='lnNumb'>8:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>9:</span>	<span class='keyword'>public</span> BinaryException<span class='separator'>(</span>String description, Throwable t<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>10:</span>		<span class='keyword'>super</span><span class='separator'>(</span>description, t<span class='separator'>)</span>;
+<span class='lnNumb'>11:</span>		<span class='keyword'>this</span>.description = description;
+<span class='lnNumb'>12:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>13:</span>	<span class='keyword'>public</span> String getDescription<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>14:</span>		<span class='keyword'>return</span> <span class='keyword'>this</span>.description;
+<span class='lnNumb'>15:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>16:</span><span class='separator'>}</span></pre> </body></html>

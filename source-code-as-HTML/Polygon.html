@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<style>
+pre{color:#444;}
+.lnComm{color:#85bd7f;}
+.string{color:#015de6;}
+.char{color:purple;}
+.blComm{color:#7f9ed2;}
+.lnNumb{color:#b5b5b5; font-size:80%; padding-right:30px; display:inline-block; width: 40px;}
+.number{color:#fa4903;}
+.annotation{color:#9756aa;}
+.keyword{color:hotpink;font-weight:bold;}
+.literal{color:darkblue;font-weight:bold;}
+.separator{color:#b10148;font-weight:bold;}
+</style>
+</head>
+<body>
+<pre>
+
+<span class='lnNumb'>1:</span><span class='keyword'>import</span> java.awt.*;
+<span class='lnNumb'>2:</span><span class='keyword'>import</span> java.awt.geom.*;
+<span class='lnNumb'>3:</span><span class='keyword'>import</span> javax.swing.*;
+<span class='lnNumb'>4:</span><span class='keyword'>import</span> javax.swing.AbstractButton;
+<span class='lnNumb'>5:</span><span class='keyword'>import</span> javax.swing.JButton;
+<span class='lnNumb'>6:</span><span class='keyword'>import</span> javax.swing.JPanel;
+<span class='lnNumb'>7:</span><span class='keyword'>import</span> javax.swing.JFrame;
+<span class='lnNumb'>8:</span><span class='keyword'>import</span> javax.swing.ImageIcon;
+<span class='lnNumb'>9:</span><span class='keyword'>import</span> java.awt.event.ActionEvent;
+<span class='lnNumb'>10:</span><span class='keyword'>import</span> java.awt.event.ActionListener;
+<span class='lnNumb'>11:</span><span class='keyword'>import</span> java.awt.event.KeyEvent;
+<span class='lnNumb'>12:</span><span class='keyword'>import</span> java.util.*;
+<span class='lnNumb'>13:</span><span class='keyword'>import</span> java.lang.Math;
+<span class='lnNumb'>14:</span><span class='keyword'>public</span> <span class='keyword'>class</span> Polygon <span class='keyword'>extends</span> JFrame <span class='keyword'>implements</span> ActionListener, Cloneable<span class='separator'>{</span>
+<span class='lnNumb'>15:</span>	<span class='keyword'>public</span> DrawingPanel d = <span class='keyword'>new</span> DrawingPanel<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>16:</span>	<span class='keyword'>public</span> ShapeData sd = <span class='keyword'>new</span> ShapeData<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>17:</span>	<span class='keyword'>public</span> LinkedList&lt;Point&gt; pts = sd.getPoints<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>18:</span>	<span class='lnComm'>// public LinkedList&lt;Point&gt; pts = deepCopy(ptss);</span>
+<span class='lnNumb'>19:</span>	<span class='keyword'>public</span> Polygon<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>20:</span>		<span class='keyword'>super</span><span class='separator'>(</span><span class='string'>" =^.^=  FELINE REDUCTION  =^.^= "</span><span class='separator'>)</span>;
+<span class='lnNumb'>21:</span>		setDefaultCloseOperation<span class='separator'>(</span>EXIT_ON_CLOSE<span class='separator'>)</span>;
+<span class='lnNumb'>22:</span>		JButton reduceBtn = <span class='keyword'>new</span> JButton<span class='separator'>(</span><span class='string'>"Click to Reduce number of points (keep clicking, it's not initially apparent)"</span><span class='separator'>)</span>;
+<span class='lnNumb'>23:</span>        add<span class='separator'>(</span>reduceBtn, BorderLayout.PAGE_START<span class='separator'>)</span>;
+<span class='lnNumb'>24:</span>        reduceBtn.addActionListener<span class='separator'>(</span><span class='keyword'>this</span><span class='separator'>)</span>;
+<span class='lnNumb'>25:</span>        reduceBtn.setActionCommand<span class='separator'>(</span><span class='string'>"goagain"</span><span class='separator'>)</span>;
+<span class='lnNumb'>26:</span>        JButton undoBtn = <span class='keyword'>new</span> JButton<span class='separator'>(</span><span class='string'>"Undo"</span><span class='separator'>)</span>;
+<span class='lnNumb'>27:</span>        add<span class='separator'>(</span>undoBtn, BorderLayout.PAGE_END<span class='separator'>)</span>;
+<span class='lnNumb'>28:</span>        undoBtn.addActionListener<span class='separator'>(</span><span class='keyword'>this</span><span class='separator'>)</span>;
+<span class='lnNumb'>29:</span>        undoBtn.setActionCommand<span class='separator'>(</span><span class='string'>"undo"</span><span class='separator'>)</span>;
+<span class='lnNumb'>30:</span>		add<span class='separator'>(</span>d, BorderLayout.CENTER<span class='separator'>)</span>;
+<span class='lnNumb'>31:</span>		setSize<span class='separator'>(</span><span class='number'>1024</span>, <span class='number'>768</span><span class='separator'>)</span>;
+<span class='lnNumb'>32:</span>		setLocationRelativeTo<span class='separator'>(</span><span class='literal'>null</span><span class='separator'>)</span>;
+<span class='lnNumb'>33:</span>		setVisible<span class='separator'>(</span><span class='literal'>true</span><span class='separator'>)</span>;
+<span class='lnNumb'>34:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>35:</span>	<span class='keyword'>public</span> <span class='keyword'>static</span> <span class='keyword'>void</span> main<span class='separator'>(</span>String<span class='separator'>[</span><span class='separator'>]</span> sa<span class='separator'>)</span> <span class='keyword'>throws</span> Exception <span class='separator'>{</span>
+<span class='lnNumb'>36:</span>		EventQueue.invokeAndWait<span class='separator'>(</span>
+<span class='lnNumb'>37:</span>			<span class='keyword'>new</span> Runnable<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>38:</span>				<span class='keyword'>public</span> <span class='keyword'>void</span> run<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>39:</span>					<span class='keyword'>new</span> Polygon<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>40:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>41:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>42:</span>		<span class='separator'>)</span>;
+<span class='lnNumb'>43:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>44:</span>	<span class='keyword'>public</span> <span class='keyword'>void</span> actionPerformed<span class='separator'>(</span>ActionEvent e<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>45:</span>        <span class='keyword'>if</span> <span class='separator'>(</span><span class='string'>"goagain"</span>.equals<span class='separator'>(</span>e.getActionCommand<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>46:</span>        	d.reduceShape<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>47:</span>        	repaint<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>48:</span>        <span class='separator'>}</span> <span class='keyword'>else</span> <span class='keyword'>if</span> <span class='separator'>(</span><span class='string'>"undo"</span>.equals<span class='separator'>(</span>e.getActionCommand<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>49:</span>        	d.undo<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>50:</span>        	repaint<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>51:</span>        	d.undo<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>52:</span>           <span class='lnComm'>// put the last point back and repaint</span>
+<span class='lnNumb'>53:</span>        <span class='separator'>}</span>
+<span class='lnNumb'>54:</span>    <span class='separator'>}</span>
+<span class='lnNumb'>55:</span>    <span class='lnComm'>//public Flags flags = new Flags();</span>
+<span class='lnNumb'>56:</span>	
+<span class='lnNumb'>57:</span>	<span class='keyword'>private</span> <span class='keyword'>class</span> DrawingPanel <span class='keyword'>extends</span> JPanel<span class='separator'>{</span>
+<span class='lnNumb'>58:</span>		<span class='keyword'>private</span> <span class='keyword'>static</span> <span class='keyword'>final</span> <span class='keyword'>long</span> serialVersionUID = <span class='number'>1L</span>;
+<span class='lnNumb'>59:</span>		<span class='keyword'>private</span> <span class='keyword'>int</span> leastSig = <span class='number'>100</span>;
+<span class='lnNumb'>60:</span>		<span class='keyword'>private</span> <span class='keyword'>int</span> lastRmd = <span class='number'>100</span>;
+<span class='lnNumb'>61:</span>		<span class='keyword'>private</span> LinkedList&lt;Point&gt; idxList = <span class='keyword'>new</span> LinkedList<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>62:</span>		<span class='keyword'>public</span> <span class='keyword'>void</span> reduceShape<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>63:</span>			System.out.println<span class='separator'>(</span>idxList.toString<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>64:</span>			ListIterator pit = pts.listIterator<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>65:</span>			Point a;
+<span class='lnNumb'>66:</span>			Point b;
+<span class='lnNumb'>67:</span>			Point c;
+<span class='lnNumb'>68:</span>			<span class='keyword'>double</span> temp = <span class='number'>0</span>;
+<span class='lnNumb'>69:</span>			<span class='keyword'>double</span> min = <span class='number'>100</span>; <span class='lnComm'>//arbitrary value. // should redo differently</span>
+<span class='lnNumb'>70:</span>			<span class='keyword'>double</span> max = <span class='number'>0</span>;
+<span class='lnNumb'>71:</span>			
+<span class='lnNumb'>72:</span>			
+<span class='lnNumb'>73:</span>			<span class='keyword'>while</span><span class='separator'>(</span>pit.hasNext<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>74:</span>					a = <span class='separator'>(</span>Point<span class='separator'>)</span> pit.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>75:</span>				<span class='keyword'>if</span><span class='separator'>(</span>pit.hasNext<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>76:</span>					b = <span class='separator'>(</span>Point<span class='separator'>)</span> pit.next<span class='separator'>(</span><span class='separator'>)</span>;					
+<span class='lnNumb'>77:</span>				<span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>78:</span>					<span class='keyword'>break</span>;
+<span class='lnNumb'>79:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>80:</span>				<span class='keyword'>if</span><span class='separator'>(</span>pit.hasNext<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>81:</span>					c = <span class='separator'>(</span>Point<span class='separator'>)</span> pit.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>82:</span>				<span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>83:</span>					<span class='keyword'>break</span>;
+<span class='lnNumb'>84:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>85:</span>				<span class='lnComm'>// calculate significance:</span>
+<span class='lnNumb'>86:</span>				<span class='keyword'>double</span> ax = a.getXCoor<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>87:</span>				<span class='keyword'>double</span> ay = a.getYCoor<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>88:</span>				<span class='keyword'>double</span> bx = b.getXCoor<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>89:</span>				<span class='keyword'>double</span> by = b.getYCoor<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>90:</span>				<span class='keyword'>double</span> cx = c.getXCoor<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>91:</span>				<span class='keyword'>double</span> cy = c.getYCoor<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>92:</span>				<span class='keyword'>double</span> d1 = Math.pow<span class='separator'>(</span><span class='separator'>(</span>Math.pow<span class='separator'>(</span><span class='separator'>(</span>bx-ax<span class='separator'>)</span>, <span class='number'>2</span><span class='separator'>)</span> + Math.pow<span class='separator'>(</span><span class='separator'>(</span>by-ay<span class='separator'>)</span>, <span class='number'>2</span><span class='separator'>)</span><span class='separator'>)</span>, <span class='number'>0</span>.<span class='number'>5</span><span class='separator'>)</span>;
+<span class='lnNumb'>93:</span>				<span class='keyword'>double</span> d2 = Math.pow<span class='separator'>(</span><span class='separator'>(</span>Math.pow<span class='separator'>(</span><span class='separator'>(</span>bx-cx<span class='separator'>)</span>, <span class='number'>2</span><span class='separator'>)</span> + Math.pow<span class='separator'>(</span><span class='separator'>(</span>by-cy<span class='separator'>)</span>, <span class='number'>2</span><span class='separator'>)</span><span class='separator'>)</span>, <span class='number'>0</span>.<span class='number'>5</span><span class='separator'>)</span>;
+<span class='lnNumb'>94:</span>				<span class='keyword'>double</span> d3 = Math.pow<span class='separator'>(</span><span class='separator'>(</span>Math.pow<span class='separator'>(</span><span class='separator'>(</span>ax-cx<span class='separator'>)</span>, <span class='number'>2</span><span class='separator'>)</span> + Math.pow<span class='separator'>(</span><span class='separator'>(</span>ay-cy<span class='separator'>)</span>, <span class='number'>2</span><span class='separator'>)</span><span class='separator'>)</span>, <span class='number'>0</span>.<span class='number'>5</span><span class='separator'>)</span>;
+<span class='lnNumb'>95:</span>				<span class='keyword'>double</span> delta = Math.abs<span class='separator'>(</span>d1 + d2 - d3<span class='separator'>)</span>;
+<span class='lnNumb'>96:</span>				<span class='keyword'>if</span><span class='separator'>(</span>delta &gt; max<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>97:</span>					max = delta;
+<span class='lnNumb'>98:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>99:</span>				<span class='keyword'>if</span><span class='separator'>(</span>delta &lt; min<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>100:</span>					min = delta;
+<span class='lnNumb'>101:</span>					leastSig++;
+<span class='lnNumb'>102:</span>					b.setLeastSig<span class='separator'>(</span>leastSig<span class='separator'>)</span>;
+<span class='lnNumb'>103:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>104:</span>				pit.previous<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>105:</span>				pit.previous<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>106:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>107:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>108:</span>		<span class='keyword'>public</span> <span class='keyword'>void</span> undo<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>109:</span>			<span class='lnComm'>// add(int index, E element)<span class='separator'></span></span>
+<span class='lnNumb'>110:</span>			<span class='keyword'>if</span><span class='separator'>(</span>idxList.size<span class='separator'>(</span><span class='separator'>)</span> &gt; <span class='number'>0</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>111:</span>				Point lastRemoved = <span class='separator'>(</span>Point<span class='separator'>)</span> idxList.getLast<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>112:</span>				<span class='keyword'>int</span> atIdx = lastRemoved.getIdx<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>113:</span>				pts.add<span class='separator'>(</span>atIdx, lastRemoved<span class='separator'>)</span>;
+<span class='lnNumb'>114:</span>				idxList.remove<span class='separator'>(</span>lastRemoved<span class='separator'>)</span>;
+<span class='lnNumb'>115:</span>			<span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>116:</span>				System.out.println<span class='separator'>(</span><span class='string'>"you're back to the begginging"</span><span class='separator'>)</span>;
+<span class='lnNumb'>117:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>118:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>119:</span>		
+<span class='lnNumb'>120:</span>		<span class='keyword'>public</span> DrawingPanel<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>121:</span>			setBackground<span class='separator'>(</span>Color.WHITE<span class='separator'>)</span>;
+<span class='lnNumb'>122:</span>			setLayout<span class='separator'>(</span><span class='literal'>null</span><span class='separator'>)</span>;
+<span class='lnNumb'>123:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>124:</span>		<span class='keyword'>protected</span> <span class='keyword'>void</span> paintComponent<span class='separator'>(</span>Graphics g<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>125:</span>			<span class='keyword'>super</span>.paintComponent<span class='separator'>(</span>g<span class='separator'>)</span>;
+<span class='lnNumb'>126:</span>			AffineTransform gat = <span class='keyword'>new</span> AffineTransform<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>127:</span>			gat.translate<span class='separator'>(</span>getWidth<span class='separator'>(</span><span class='separator'>)</span> / <span class='number'>2</span>.<span class='number'>0</span>, getHeight<span class='separator'>(</span><span class='separator'>)</span> / <span class='number'>2</span>.<span class='number'>0</span><span class='separator'>)</span>;
+<span class='lnNumb'>128:</span>			gat.scale<span class='separator'>(</span><span class='number'>1</span>.<span class='number'>0</span>, -<span class='number'>1</span>.<span class='number'>0</span><span class='separator'>)</span>;
+<span class='lnNumb'>129:</span>			Graphics2D g2d = <span class='separator'>(</span>Graphics2D<span class='separator'>)</span> g.create<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>130:</span>			g2d.transform<span class='separator'>(</span>gat<span class='separator'>)</span>;
+<span class='lnNumb'>131:</span>			
+<span class='lnNumb'>132:</span>			Drawable d =  initAnF<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>133:</span>			AffineTransform at = <span class='keyword'>new</span> AffineTransform<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>134:</span>			at.scale<span class='separator'>(</span><span class='number'>2</span>.<span class='number'>5</span>,  <span class='number'>2</span>.<span class='number'>5</span><span class='separator'>)</span>;
+<span class='lnNumb'>135:</span>			at.concatenate<span class='separator'>(</span>d.getTransform<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>136:</span>			Shape shape = at.createTransformedShape<span class='separator'>(</span>d.getShape<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>137:</span>			g2d.setPaint<span class='separator'>(</span>d.getFillColor<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>138:</span>			g2d.fill<span class='separator'>(</span>shape<span class='separator'>)</span>;
+<span class='lnNumb'>139:</span>			g2d.setPaint<span class='separator'>(</span>d.getDrawColor<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>140:</span>			<span class='lnComm'>//g2d.setStroke(d.getStroke());</span>
+<span class='lnNumb'>141:</span>			
+<span class='lnNumb'>142:</span>			g2d.draw<span class='separator'>(</span>shape<span class='separator'>)</span>;
+<span class='lnNumb'>143:</span>			g2d.dispose<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>144:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>145:</span>		<span class='keyword'>private</span> Drawable initAnF<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>146:</span>			<span class='keyword'>return</span> <span class='keyword'>new</span> Drawable<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>147:</span>				<span class='annotation'>@Override</span>
+<span class='lnNumb'>148:</span>				<span class='keyword'>public</span> <span class='keyword'>void</span> initShape<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>149:</span>					AffineTransform at = <span class='keyword'>new</span> AffineTransform<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>150:</span>					at.scale<span class='separator'>(</span><span class='number'>1</span>.<span class='number'>0</span>, -<span class='number'>1</span>.<span class='number'>0</span><span class='separator'>)</span>;
+<span class='lnNumb'>151:</span>					setTransform<span class='separator'>(</span>at<span class='separator'>)</span>;
+<span class='lnNumb'>152:</span>					<span class='lnComm'>// setFillColor(Color.GRAY);</span>
+<span class='lnNumb'>153:</span>					<span class='lnComm'>// setDrawColor(Color.BLACK);</span>
+<span class='lnNumb'>154:</span>					<span class='lnComm'>// setStroke(new BasicStroke(3.0f));</span>
+<span class='lnNumb'>155:</span>					setShape<span class='separator'>(</span>path<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>; <span class='lnComm'>// Path</span>
+<span class='lnNumb'>156:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>157:</span>			<span class='separator'>}</span>;
+<span class='lnNumb'>158:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>159:</span>		
+<span class='lnNumb'>160:</span>		<span class='keyword'>private</span> Shape path<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>161:</span>			Path2D p2d = <span class='keyword'>new</span> Path2D.Double<span class='separator'>(</span>Path2D.WIND_EVEN_ODD<span class='separator'>)</span>;
+<span class='lnNumb'>162:</span>			<span class='lnComm'>//LinkedList&lt;Point&gt; pts = sd.getPoints();</span>
+<span class='lnNumb'>163:</span>			ListIterator pit = pts.listIterator<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>164:</span>				<span class='keyword'>if</span><span class='separator'>(</span>pit.hasNext<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>165:</span>					Point p = <span class='separator'>(</span>Point<span class='separator'>)</span> pit.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>166:</span>					p2d.moveTo<span class='separator'>(</span>p.getXCoor<span class='separator'>(</span><span class='separator'>)</span>,p.getYCoor<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>167:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>168:</span>				<span class='keyword'>while</span><span class='separator'>(</span>pit.hasNext<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>169:</span>					Point p = <span class='separator'>(</span>Point<span class='separator'>)</span> pit.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>170:</span>					<span class='keyword'>if</span><span class='separator'>(</span>p.getLeastSig<span class='separator'>(</span><span class='separator'>)</span> != leastSig<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>171:</span>						p2d.lineTo<span class='separator'>(</span>p.getXCoor<span class='separator'>(</span><span class='separator'>)</span>,p.getYCoor<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span>;
+<span class='lnNumb'>172:</span>					<span class='separator'>}</span><span class='keyword'>else</span><span class='separator'>{</span>
+<span class='lnNumb'>173:</span>						<span class='keyword'>int</span> idx = pts.indexOf<span class='separator'>(</span>p<span class='separator'>)</span>; <span class='lnComm'>// keeps track of removed items in an idxList</span>
+<span class='lnNumb'>174:</span>						p.setIdx<span class='separator'>(</span>idx<span class='separator'>)</span>;
+<span class='lnNumb'>175:</span>						idxList.add<span class='separator'>(</span>p<span class='separator'>)</span>;
+<span class='lnNumb'>176:</span>						pit.remove<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>177:</span>					<span class='separator'>}</span>
+<span class='lnNumb'>178:</span>				<span class='separator'>}</span>
+<span class='lnNumb'>179:</span>			p2d.closePath<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>180:</span>			<span class='keyword'>return</span> p2d;
+<span class='lnNumb'>181:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>182:</span>		<span class='keyword'>public</span> LinkedList&lt;Point&gt; deepCopy<span class='separator'>(</span>LinkedList&lt;Point&gt; llist<span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>183:</span>			LinkedList&lt;Point&gt; copy = <span class='keyword'>new</span> LinkedList&lt;Point&gt;<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>184:</span>			ListIterator&lt;Point&gt; lit = llist.listIterator<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>185:</span>			<span class='keyword'>while</span><span class='separator'>(</span>lit.hasNext<span class='separator'>(</span><span class='separator'>)</span><span class='separator'>)</span><span class='separator'>{</span>
+<span class='lnNumb'>186:</span>				Point p = <span class='separator'>(</span>Point<span class='separator'>)</span> lit.next<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>187:</span>				Point n = <span class='separator'>(</span>Point<span class='separator'>)</span> p.clone<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>188:</span>				copy.add<span class='separator'>(</span>n<span class='separator'>)</span>;
+<span class='lnNumb'>189:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>190:</span>			<span class='lnComm'>//System.out.println("deepcopy: "+copy.toString());</span>
+<span class='lnNumb'>191:</span>			<span class='keyword'>return</span> copy;
+<span class='lnNumb'>192:</span>	   	<span class='separator'>}</span>
+<span class='lnNumb'>193:</span>		<span class='keyword'>private</span> <span class='keyword'>abstract</span> <span class='keyword'>class</span> Drawable <span class='separator'>{</span>
+<span class='lnNumb'>194:</span>			<span class='keyword'>private</span> AffineTransform transform = <span class='keyword'>new</span> AffineTransform<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>195:</span>			<span class='keyword'>private</span> Paint fillColor = Color.WHITE;
+<span class='lnNumb'>196:</span>			<span class='keyword'>private</span> Paint drawColor = Color.BLACK;
+<span class='lnNumb'>197:</span>			<span class='keyword'>private</span> Stroke stroke = <span class='keyword'>new</span> BasicStroke<span class='separator'>(</span><span class='number'>0</span>.<span class='number'>0f</span><span class='separator'>)</span>;
+<span class='lnNumb'>198:</span>			<span class='keyword'>private</span> Shape shape = <span class='keyword'>new</span> Path2D.Double<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>199:</span>			<span class='keyword'>public</span> Drawable<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>200:</span>				initShape<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>201:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>202:</span>			<span class='keyword'>public</span> AffineTransform getTransform<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>203:</span>				<span class='keyword'>return</span> transform;
+<span class='lnNumb'>204:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>205:</span>			<span class='keyword'>public</span> Paint getFillColor<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>206:</span>				<span class='keyword'>return</span> fillColor;
+<span class='lnNumb'>207:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>208:</span>			<span class='keyword'>public</span> Paint getDrawColor<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>209:</span>				<span class='keyword'>return</span> drawColor;
+<span class='lnNumb'>210:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>211:</span>			<span class='keyword'>public</span> Stroke getStroke<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>212:</span>				<span class='keyword'>return</span> stroke;
+<span class='lnNumb'>213:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>214:</span>			<span class='keyword'>public</span> Shape getShape<span class='separator'>(</span><span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>215:</span>				<span class='keyword'>return</span> shape;
+<span class='lnNumb'>216:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>217:</span>			<span class='keyword'>public</span> <span class='keyword'>void</span> setTransform<span class='separator'>(</span>AffineTransform at<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>218:</span>				<span class='keyword'>this</span>.transform = at;
+<span class='lnNumb'>219:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>220:</span>			<span class='keyword'>public</span> <span class='keyword'>void</span> setFillColor<span class='separator'>(</span>Paint p<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>221:</span>				<span class='keyword'>this</span>.fillColor = p;
+<span class='lnNumb'>222:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>223:</span>			<span class='keyword'>public</span> <span class='keyword'>void</span> setDrawColor<span class='separator'>(</span>Paint p<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>224:</span>				<span class='keyword'>this</span>.drawColor = p;
+<span class='lnNumb'>225:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>226:</span>			<span class='keyword'>public</span> <span class='keyword'>void</span> setStroke<span class='separator'>(</span>Stroke s<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>227:</span>				<span class='keyword'>this</span>.stroke = s;
+<span class='lnNumb'>228:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>229:</span>			<span class='keyword'>public</span> <span class='keyword'>void</span> setShape<span class='separator'>(</span>Shape shape<span class='separator'>)</span> <span class='separator'>{</span>
+<span class='lnNumb'>230:</span>				<span class='keyword'>this</span>.shape = shape;
+<span class='lnNumb'>231:</span>			<span class='separator'>}</span>
+<span class='lnNumb'>232:</span>			<span class='keyword'>public</span> <span class='keyword'>abstract</span> <span class='keyword'>void</span> initShape<span class='separator'>(</span><span class='separator'>)</span>;
+<span class='lnNumb'>233:</span>		<span class='separator'>}</span>
+<span class='lnNumb'>234:</span>	<span class='separator'>}</span>
+<span class='lnNumb'>235:</span><span class='separator'>}</span></pre> </body></html>
