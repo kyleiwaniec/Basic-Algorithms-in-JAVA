@@ -4,7 +4,7 @@ Basic-Algorithms-in-JAVA
 from Intro to Programming & COS210 - Algorithms and DataStructures
 
 These are just a few examples of algorithms. 
-Data structures and other Algorithms can be found in the REGEX_UTIL repo
+Data structures and other Algorithms from COS210 can be found in the REGEX_UTIL repo
 
 - QuickSorts - QuickSort implementations with timimg
 - RadixSort - RadixSort implementation with timimg
